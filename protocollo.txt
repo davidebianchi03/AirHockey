@@ -1,0 +1,49 @@
+CONNESSIONE
+Fatto con handshake a tre vie
+
+Peer 1
+c;nickname
+
+Peer 2
+y;nickname --> risposta affermativa
+n;   	   --> risposta negativa
+
+Peer 1
+y;
+n;
+
+Chi ha inviato la richiesta di connessione da il via alla partita inviando direzione random e velocità random
+
+Nel caso venga richiesta una nuova connessione mentre un'altra è in corso questa viene rifiutata di default
+
+CHIUSURA DELLA CONNESSIONE 
+e;
+
+Se viene ricevuto un comando da un peer con il quale non si è collegati viene inviato di default il comando di chiusura connessione
+
+REMATCH
+Dopo 10 punti finisce la partita e appare il messaggio di riepilogo e se l'utente desidera effettuare una nuova partita
+Peer 1
+r;
+
+Peer 2
+y; --> risposta affermativa
+e; -->risposta negativa
+
+INVIO COORDINATE CURSORE (Manopola)
+m;x;y;
+
+Le coordinate vengono inviate in base al proprio punto di vista (manopola in basso)
+
+AGGIORNAMENTO POSIZIONE PALLINA
+La posizione della pallina è calcolata in base alla velocità e all'angolo 
+
+p;angolo_rimbalzo(in radianti);velocità(px/s);x_partenza;y_partenza
+
+MESSAGGIO GOAL SUBITO
+g; --> viene inviato da chi subisce il goal
+
+DIMENSIONI OGGETTI
+Campo = 500 pixel * 800 pixel
+Pallina = raggio 25 pixel
+Manopole = raggio 40 pixel
