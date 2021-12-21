@@ -1,4 +1,7 @@
-﻿using System;
+﻿using SFML.Graphics;
+using SFML.Window;
+using SFMLUIComponentsLibrary;
+using System;
 
 namespace AirHockey
 {
@@ -6,9 +9,16 @@ namespace AirHockey
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            VideoMode mode = new VideoMode(1000, 500);
+            RenderWindow window = new RenderWindow(mode, "Air Hockey");
+            window.Closed += (obj, e) => { window.Close(); };
 
-
+            while (window.IsOpen)
+            {
+                window.DispatchEvents();
+                window.Clear();
+                window.Display();
+            }
         }
     }
 }

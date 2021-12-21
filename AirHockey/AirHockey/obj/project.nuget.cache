@@ -1,15 +1,19 @@
 {
   "version": 2,
-  "dgSpecHash": "sARSkD9fVZ1ejtCS6GFLUJzXx08MWn9LYxCtnR7bW2jtf+GhNJ/3msYRykdWxjGxtrQVGatTpy/4NQUSVBAA3A==",
+  "dgSpecHash": "zm+KExCiANv1EAwEqay1oeHVtH5PdvAZcriTwszWsJiQvTcZ2FQPwJNiBG7Pf3QrFRGXQlCxT1nbgCRDMEm4CQ==",
   "success": true,
-  "projectFilePath": "D:\\Dassaro\\TECNOLOGIE\\PROGETTO AIR HOCKEY\\AirHockey\\AirHockey\\AirHockey\\AirHockey.csproj",
+  "projectFilePath": "C:\\Users\\Davide\\Documents\\GitHub\\AirHockey\\AirHockey\\AirHockey\\AirHockey.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Dassaro_Davide\\.nuget\\packages\\csfml\\2.5.0\\csfml.2.5.0.nupkg.sha512",
-    "C:\\Users\\Dassaro_Davide\\.nuget\\packages\\sfml.audio\\2.5.0\\sfml.audio.2.5.0.nupkg.sha512",
-    "C:\\Users\\Dassaro_Davide\\.nuget\\packages\\sfml.graphics\\2.5.0\\sfml.graphics.2.5.0.nupkg.sha512",
-    "C:\\Users\\Dassaro_Davide\\.nuget\\packages\\sfml.net\\2.5.0\\sfml.net.2.5.0.nupkg.sha512",
-    "C:\\Users\\Dassaro_Davide\\.nuget\\packages\\sfml.system\\2.5.0\\sfml.system.2.5.0.nupkg.sha512",
-    "C:\\Users\\Dassaro_Davide\\.nuget\\packages\\sfml.window\\2.5.0\\sfml.window.2.5.0.nupkg.sha512"
+    "C:\\Users\\Davide\\.nuget\\packages\\csfml\\2.5.0\\csfml.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\sfml.audio\\2.5.0\\sfml.audio.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\sfml.graphics\\2.5.0\\sfml.graphics.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\sfml.net\\2.5.0\\sfml.net.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\sfml.system\\2.5.0\\sfml.system.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\sfml.window\\2.5.0\\sfml.window.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.22\\microsoft.netcore.app.host.win-x64.3.1.22.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.10\\microsoft.aspnetcore.app.ref.3.1.10.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512"
   ],
   "logs": []
 }

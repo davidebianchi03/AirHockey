@@ -2,11 +2,18 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
+    <StartupObject>AirHockey.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="SFML.Net" Version="2.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SFMLUIComponentsLibrary">
+      <HintPath>..\..\..\..\..\Downloads\SFMLUIComponentsLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
