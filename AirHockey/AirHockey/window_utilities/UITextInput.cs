@@ -66,7 +66,7 @@ namespace window_utilities
         {
             this.Font = Font;
             this.window = window;
-            this.Content= Content;
+            this.Content = Content;
             Size = new Vector2f();
             Position = new Vector2f();
             BackgroundColor = Color.White;
@@ -102,7 +102,7 @@ namespace window_utilities
 
             for (int i = 0; i <= Content.Length; i++)
             {
-                if(i == cursorPosition && ShowTextCursor)
+                if (i == cursorPosition && ShowTextCursor)
                 {
                     RectangleShape cursor = new RectangleShape();
                     cursor.Size = new Vector2f(2, TextSize + 4);
@@ -117,7 +117,7 @@ namespace window_utilities
                 }
             }
 
-            
+
             window.Draw(text);
         }
 
@@ -162,65 +162,71 @@ namespace window_utilities
 
         private void KeyPressedCallback(object sender, SFML.Window.KeyEventArgs e)
         {
-            if(((int)e.Code) >= 0 && ((int)e.Code) <= 25)
+            if (textInputSelected)
             {
-                //si tratta di una lettera
-                if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) || Keyboard.IsKeyPressed(Keyboard.Key.RShift))//Modificatore shift premuto
+                if (((int)e.Code) >= 0 && ((int)e.Code) <= 25)
                 {
-                    Content = Content.Insert(cursorPosition, e.Code.ToString());
+                    //si tratta di una lettera
+                    if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) || Keyboard.IsKeyPressed(Keyboard.Key.RShift))//Modificatore shift premuto
+                    {
+                        Content = Content.Insert(cursorPosition, e.Code.ToString());
+                        cursorPosition++;
+                    }
+                    else
+                    {
+                        Content = Content.Insert(cursorPosition, e.Code.ToString().ToLower());
+                        cursorPosition++;
+                    }
+                }
+                else if (e.Code == Keyboard.Key.Backspace)
+                {
+                    //Tasto Backspace
+                    if (cursorPosition > 0)
+                    {
+                        Content = Content.Remove(cursorPosition - 1, 1);
+                        cursorPosition--;
+                    }
+                }
+                else if (((int)e.Code) >= 26 && ((int)e.Code) <= 36)
+                {
+                    //Visualizzazione dei numeri
+                    Content = Content.Insert(cursorPosition, (((int)e.Code) - 26).ToString());
                     cursorPosition++;
+                }
+                else if (e.Code == Keyboard.Key.Right)
+                {
+                    //Freccetta a destra
+                    if (cursorPosition + 1 <= Content.Length)
+                    {
+                        cursorPosition++;
+                    }
+                }
+                else if (e.Code == Keyboard.Key.Left)
+                {
+                    //Freccetta a destra
+                    if (cursorPosition - 1 >= 0)
+                    {
+                        cursorPosition--;
+                    }
+                }
+                else if (e.Code == Keyboard.Key.Delete)
+                {
+                    if (cursorPosition < Content.Length)
+                    {
+                        Content = Content.Remove(cursorPosition, 1);
+                    }
                 }
                 else
                 {
-                    Content = Content.Insert(cursorPosition, e.Code.ToString().ToLower());
-                    cursorPosition++;
+                    Console.Beep(500, 100);
                 }
-            }
-            else if(e.Code == Keyboard.Key.Backspace)
-            {
-                //Tasto Backspace
-                if (cursorPosition > 0)
-                {
-                    Content = Content.Remove(cursorPosition - 1, 1);
-                    cursorPosition--;
-                }
-            }
-            else if(((int)e.Code) >= 26 && ((int)e.Code) <= 36)
-            {
-                //Visualizzazione dei numeri
-                Content = Content.Insert(cursorPosition, (((int)e.Code) - 26).ToString());
-                cursorPosition++;
-            }
-            else if(e.Code == Keyboard.Key.Right)
-            {
-                //Freccetta a destra
-                if(cursorPosition + 1 <= Content.Length)
-                {
-                    cursorPosition++;
-                }
-            }
-            else if (e.Code == Keyboard.Key.Left)
-            {
-                //Freccetta a destra
-                if (cursorPosition - 1 >= 0)
-                {
-                    cursorPosition--;
-                }
-            }
-            else if(e.Code == Keyboard.Key.Delete)
-            {
-                if(cursorPosition < Content.Length)
-                {
-                    Content = Content.Remove(cursorPosition, 1);
-                }
-            }
-            else
-            {
-                Console.Beep(500, 100);
+
+                KeyPressed?.Invoke(this, EventArgs.Empty);
+
             }
         }
 
         public event EventHandler KeyPressed;
-
     }
+
 }

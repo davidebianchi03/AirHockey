@@ -14,9 +14,11 @@ namespace AirHockey
         */
 
         public Font font { get; set; } = null;
-        private static SharedSettings instance;
+        private static SharedSettings instance = null;
         private string fontPath = "";//percorso del file .ttf contenente il font da utilizzare
         public string resourcesPath = "";//percorso della cartella delle risorse
+        public string username { get; set; } = "";//nome utente del giocatore
+        public WindowManager windowManager { get; set; } = null;
 
         private SharedSettings()
         {

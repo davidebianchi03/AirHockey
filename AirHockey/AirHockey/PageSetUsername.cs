@@ -21,7 +21,7 @@ namespace AirHockey
             SharedSettings settings = SharedSettings.GetInstance();
             this.window = window;
             textInput = new UITextInput(settings.font, window);
-            textInput.Content = "";
+            textInput.Content = settings.username;
             textInput.Size = new SFML.System.Vector2f(300, 50);
             textInput.Position = new SFML.System.Vector2f(windowCenterX - (textInput.Size.X / 2), windowCenterY - (borderHeight / 2) + 400);
             textInput.BackgroundColor = Color.Black;
@@ -38,8 +38,20 @@ namespace AirHockey
             button.Size = new SFML.System.Vector2f(150, 50);//-> da sistemare
             button.Position = new SFML.System.Vector2f(windowCenterX - (button.Size.X / 2), windowCenterY - (borderHeight / 2) + 480);//-> da sistemare
             button.textSize = 18;
+            button.ButtonPressed += ButtonClickedCallback;
         }
 
+        /* Quando viene cliccato il pulsante conferma imposto lo username all'interno delle variabili condivise*/
+        private void ButtonClickedCallback(object sender, EventArgs e)
+        {
+            SharedSettings settings = SharedSettings.GetInstance();
+            //inserisco lo username inserito dall'utente nelle variabili condivise
+            settings.username = textInput.Content;
+            //cambio la pagina
+            settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
+        }
+
+        /* Metodo per disegnare la pagina */
         public void Draw()
         {
             SharedSettings settings = SharedSettings.GetInstance();
