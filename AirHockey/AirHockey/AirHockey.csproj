@@ -12,10 +12,4 @@
     <PackageReference Include="SFML.Net" Version="2.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="SFMLUIComponentsLibrary">
-      <HintPath>R:\Download\SFMLUIComponentsLibrary.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

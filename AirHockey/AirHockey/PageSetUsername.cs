@@ -11,6 +11,7 @@ namespace AirHockey
         public string Username { get; set; } = "";
         private RenderWindow window;
         private UITextInput textInput;
+        private UIButton button;
         private const int borderWidth = 600;
         private const int borderHeight = 600;
         public PageSetUsername(RenderWindow window)
@@ -20,7 +21,7 @@ namespace AirHockey
             SharedSettings settings = SharedSettings.GetInstance();
             this.window = window;
             textInput = new UITextInput(settings.font, window);
-            textInput.Content = "Test";
+            textInput.Content = "";
             textInput.Size = new SFML.System.Vector2f(300, 50);
             textInput.Position = new SFML.System.Vector2f(windowCenterX - (textInput.Size.X / 2), windowCenterY - (borderHeight / 2) + 400);
             textInput.BackgroundColor = Color.Black;
@@ -29,6 +30,14 @@ namespace AirHockey
             textInput.TextSize = 16;
             textInput.BorderColor = Color.White;
             textInput.BorderThickness = 2;
+            button = new UIButton(window, "Conferma" ,settings.font);
+            button.BorderThickness = 2;
+            button.BorderColor = Color.White;
+            button.textColor = Color.White;
+            button.FillColor = Color.Black;
+            button.Size = new SFML.System.Vector2f(150, 50);//-> da sistemare
+            button.Position = new SFML.System.Vector2f(windowCenterX - (button.Size.X / 2), windowCenterY - (borderHeight / 2) + 480);//-> da sistemare
+            button.textSize = 18;
         }
 
         public void Draw()
@@ -69,6 +78,8 @@ namespace AirHockey
             window.Draw(textboxUsernameLbl);
             //disegno la textbox (uso l'oggetto UITextInput della libreria SFMLUIComponentsLibrary.dll [è da ottimizzare])
             textInput.draw();
+            /* Disegno il pulsante per conferma lo Username */
+            button.draw();
         }
     }
 }

@@ -99,13 +99,21 @@ namespace window_utilities
             text.FillColor = ForegroundColor;
 
             text.DisplayedString = "";
-            for (int i = 0; i < Content.Length; i++)
+
+            for (int i = 0; i <= Content.Length; i++)
             {
-                text.DisplayedString += Content[i];
                 if(i == cursorPosition && ShowTextCursor)
                 {
                     RectangleShape cursor = new RectangleShape();
-                    cursor.Size = new Vector2f(2, TextSize);
+                    cursor.Size = new Vector2f(2, TextSize + 4);
+                    cursor.FillColor = ForegroundColor;
+                    cursor.Position = new Vector2f(text.GetGlobalBounds().Left + text.GetGlobalBounds().Width, text.GetGlobalBounds().Top - 4);
+                    window.Draw(cursor);
+                }
+
+                if (i < Content.Length)
+                {
+                    text.DisplayedString += Content[i];
                 }
             }
 
@@ -208,9 +216,8 @@ namespace window_utilities
             }
             else
             {
-                Console.Beep(500, 750);
+                Console.Beep(500, 100);
             }
-            //Console.WriteLine(((int)e.Code));
         }
 
         public event EventHandler KeyPressed;
