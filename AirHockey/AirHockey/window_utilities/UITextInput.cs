@@ -96,8 +96,20 @@ namespace window_utilities
             text.Position = new Vector2f(Position.X + 10, Position.Y + (Size.Y / 2) - (TextSize / 2));
             text.Font = Font;
             text.CharacterSize = (uint)TextSize;
-            text.FillColor = ForegroundColor;           
-            text.DisplayedString = Content;
+            text.FillColor = ForegroundColor;
+
+            text.DisplayedString = "";
+            for (int i = 0; i < Content.Length; i++)
+            {
+                text.DisplayedString += Content[i];
+                if(i == cursorPosition && ShowTextCursor)
+                {
+                    RectangleShape cursor = new RectangleShape();
+                    cursor.Size = new Vector2f(2, TextSize);
+                }
+            }
+
+            
             window.Draw(text);
         }
 
@@ -156,14 +168,49 @@ namespace window_utilities
                     cursorPosition++;
                 }
             }
-            else if(e.Code == Keyboard.Key.BackSpace)
+            else if(e.Code == Keyboard.Key.Backspace)
             {
-                if (Content.Length > 0)
+                //Tasto Backspace
+                if (cursorPosition > 0)
                 {
-                    Content = Content.Remove(cursorPosition, 1);
+                    Content = Content.Remove(cursorPosition - 1, 1);
                     cursorPosition--;
                 }
             }
+            else if(((int)e.Code) >= 26 && ((int)e.Code) <= 36)
+            {
+                //Visualizzazione dei numeri
+                Content = Content.Insert(cursorPosition, (((int)e.Code) - 26).ToString());
+                cursorPosition++;
+            }
+            else if(e.Code == Keyboard.Key.Right)
+            {
+                //Freccetta a destra
+                if(cursorPosition + 1 <= Content.Length)
+                {
+                    cursorPosition++;
+                }
+            }
+            else if (e.Code == Keyboard.Key.Left)
+            {
+                //Freccetta a destra
+                if (cursorPosition - 1 >= 0)
+                {
+                    cursorPosition--;
+                }
+            }
+            else if(e.Code == Keyboard.Key.Delete)
+            {
+                if(cursorPosition < Content.Length)
+                {
+                    Content = Content.Remove(cursorPosition, 1);
+                }
+            }
+            else
+            {
+                Console.Beep(500, 750);
+            }
+            //Console.WriteLine(((int)e.Code));
         }
 
         public event EventHandler KeyPressed;
