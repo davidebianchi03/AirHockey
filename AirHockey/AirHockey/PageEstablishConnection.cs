@@ -45,7 +45,7 @@ namespace AirHockey
 
         private void ButtonClickedCallBack(object sender, EventArgs e)
         {
-            //throw new NotImplementedException();
+
         }
 
         public void Draw()

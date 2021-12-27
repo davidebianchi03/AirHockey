@@ -11,9 +11,10 @@ namespace AirHockey
     class WindowManager
     {
         public UIWindow window { get; set; } = null;
-        public int PageDisplayed { get; set; } = UsernameInputPage;//Schermata visualizzata adesso sullo schermo
+        public int PageDisplayed { get; set; } = AcceptConnectionPage;//Schermata visualizzata adesso sullo schermo
         public const int UsernameInputPage = 0;//ID della schermata di inserimento dello Username
         public const int EstabishConnectionPage = 1;//ID della schermata per inviare una richiesta di connessione verso un altro host
+        public const int AcceptConnectionPage = 2;//ID della schermata per accettare la richiesta di connessione proveniente da un altro host
 
         public WindowManager()
         {
@@ -40,6 +41,8 @@ namespace AirHockey
             PageSetUsername setUsernamePage = null;
             //creo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
             PageEstablishConnection establishConnection = null;
+            //creo l'oggetto che serve a disegnare e gestire la pagina per accettare/rifiutare una richiesta di connessione
+            PageAcceptConnection acceptConnection = null;
 
             while (window.IsOpen)//ciclo principale della finestra
             {
@@ -57,6 +60,7 @@ namespace AirHockey
                         }
                         setUsernamePage.Draw();
                         establishConnection = null;
+                        acceptConnection = null;
                         break;
 
                     case EstabishConnectionPage:
@@ -67,6 +71,17 @@ namespace AirHockey
                             establishConnection = new PageEstablishConnection(window);
                         }
                         establishConnection.Draw();
+                        setUsernamePage = null;
+                        acceptConnection = null;
+                        break;
+                    case AcceptConnectionPage:
+                        if(acceptConnection == null)
+                        {
+                            //inizializzo l'oggetto che server a disegnare e gestire la pagina per accettare/rifiutare richieste di connessione
+                            acceptConnection = new PageAcceptConnection(window);
+                        }
+                        acceptConnection.Draw();
+                        establishConnection = null;
                         setUsernamePage = null;
                         break;
                 }
