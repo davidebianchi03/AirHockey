@@ -11,6 +11,9 @@ namespace AirHockey.window_utilities
 {
     class UIMessageBox
     {
+        /*
+            Classe per creare e visualizzare le messagebox
+        */
         public string Content { get; set; } = "";
         public string Title { get; set; } = "";
         public RenderWindow ParentWindow { get; set; } = null;
@@ -20,7 +23,6 @@ namespace AirHockey.window_utilities
         private Thread DisplayThread = null;
         public VideoMode VideoMode { get; set; }
         public bool IsOpen { get; set; } = false;
-
 
         public UIMessageBox(VideoMode mode, string title, string content, RenderWindow ParentWindow, Font Font)
         {
