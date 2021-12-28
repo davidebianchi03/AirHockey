@@ -1,4 +1,6 @@
-﻿using SFML.Graphics;
+﻿using AirHockey.window_utilities;
+using SFML.Graphics;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,7 +32,7 @@ namespace AirHockey
             textInput.TextSize = 16;
             textInput.BorderColor = Color.White;
             textInput.BorderThickness = 2;
-            button = new UIButton(window, "Conferma" ,settings.font);
+            button = new UIButton(window, "Conferma", settings.font);
             button.BorderThickness = 2;
             button.BorderColor = Color.White;
             button.textColor = Color.White;
@@ -39,6 +41,7 @@ namespace AirHockey
             button.Position = new SFML.System.Vector2f(windowCenterX - (button.Size.X / 2), windowCenterY - (borderHeight / 2) + 480);//-> da sistemare
             button.textSize = 18;
             button.ButtonPressed += ButtonClickedCallback;
+
         }
 
         /* Quando viene cliccato il pulsante conferma imposto lo username all'interno delle variabili condivise*/
@@ -51,15 +54,17 @@ namespace AirHockey
             settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
         }
 
+
         /* Metodo per disegnare la pagina */
         public void Draw()
         {
+
             SharedSettings settings = SharedSettings.GetInstance();
 
             float windowCenterX = window.Size.X / 2;//centro della finestra sull'asse delle X
             float windowCenterY = window.Size.Y / 2;//centro della finestra sull'asse delle Y
             /*  disegno il rettangolo di contorno di tutto */
-            
+
             /*  disegno il bordo che contiene tutto */
             RectangleShape border = new RectangleShape();
             border.Size = new SFML.System.Vector2f(borderWidth, borderHeight);
@@ -78,7 +83,7 @@ namespace AirHockey
             //creo la texture
             Texture textureLogo = new Texture(settings.resourcesPath + "logo.png");
             Sprite sprite = new Sprite(textureLogo);
-            sprite.Scale = new SFML.System.Vector2f(0.30f,0.30f);//dimensione scalata dell'immagine
+            sprite.Scale = new SFML.System.Vector2f(0.30f, 0.30f);//dimensione scalata dell'immagine
             sprite.Position = new SFML.System.Vector2f(windowCenterX - (sprite.GetGlobalBounds().Width / 2), windowCenterY - (borderHeight / 2) + 150);
             window.Draw(sprite);
             /*  disegno la textbox per l'inserimento dello username   */

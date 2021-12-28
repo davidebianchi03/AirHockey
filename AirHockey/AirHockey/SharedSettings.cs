@@ -25,14 +25,14 @@ namespace AirHockey
             QUESTO OGGETTO VIENE SETTATO AD UN VALORE DIVERSO DA "" SOLO QUANDO DEVE ESSERE VISUALIZZATA LA SCHERMATA 'PageAcceptConnection'
             L'OGGETTO DEVE ESSERE IMPOSTATO NELLO STATO DIVERSO DA "" PRIMA DI VISUALIZZARE LA PAGINA
          */
-        public string hostRequestorIP { get; set; } = "192.168.1.45";
+        public string hostRequestorIP { get; set; } = "";
 
         /*
             Oggetto che contiene lo username dell'avversario che sta richiedendo la connessione
             QUESTO OGGETTO VIENE SETTATO AD UN VALORE DIVERSO DA "" SOLO QUANDO DEVE ESSERE VISUALIZZATA LA SCHERMATA 'PageAcceptConnection'
             L'OGGETTO DEVE ESSERE IMPOSTATO NELLO STATO DIVERSO DA "" PRIMA DI VISUALIZZARE LA PAGINA
          */
-        public string hostRequestorUsername { get; set; } = "Pippo";
+        public string hostRequestorUsername { get; set; } = "";
 
         private SharedSettings()
         {
