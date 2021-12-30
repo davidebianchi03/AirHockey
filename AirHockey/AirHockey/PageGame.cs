@@ -18,7 +18,7 @@ namespace AirHockey
         private RectangleShape opponentGoal;//la porta dell'avversario
         public int myPoints { get; set; } = 0;//i miei punti
         public int opponentPoints { get; set; } = 0;//i punti dell'avversario
-
+        public Ball Ball { get; set; }
         public PageGame(RenderWindow parentWindow)
         {
             SharedSettings settings = SharedSettings.GetInstance();
@@ -39,6 +39,9 @@ namespace AirHockey
             opponentGoal = new RectangleShape();
             opponentGoal.Size = new SFML.System.Vector2f(goalWidth, 50);
             opponentGoal.Texture = textureGoal;
+            //creo l'oggetto della pallina
+            Ball = new Ball(parentWindow, playgroundSize);
+            Ball.StartMovingBall();
         }
 
         public void Draw()
@@ -80,6 +83,9 @@ namespace AirHockey
             opponentPointTxt.Position = new SFML.System.Vector2f(playground.Position.X + playground.Size.X + 10, playground.Position.Y + (playground.Size.Y / 2) + 10);
             opponentPointTxt.CharacterSize = 30;
             parentWindow.Draw(opponentPointTxt);
+            //disegno la pallina
+            Ball.playgroundPosition = playground.Position;
+            Ball.DrawBall(playground.Position);
         }
     }
 }

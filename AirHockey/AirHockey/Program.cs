@@ -15,7 +15,8 @@ namespace AirHockey
             SharedSettings settings = SharedSettings.GetInstance();
             settings.windowManager = windowManager;
             windowManager.DisplayWindow();
-            Console.WriteLine("Goodbye" + SharedSettings.GetInstance().username);
+            //Console.WriteLine("Goodbye" + SharedSettings.GetInstance().username);
+            //Console.ReadLine();
         }
     }
 }
