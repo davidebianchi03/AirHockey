@@ -98,20 +98,6 @@ namespace AirHockey
             textInput.draw();
             /* Disegno il pulsante per conferma lo Username */
             button.draw();
-
-            /* TEST */
-            //DA SISTEMARE!!! Ogni tanto quando ha voglia invia eccezioni a caso
-            if (!MessageBox)
-            {
-
-                VideoMode mode = new VideoMode(500, 250);
-                UIAcceptDiscardBox msg = new UIAcceptDiscardBox(mode, "Test", "Test1234", window, settings.font);
-                //msg.Content = "Test1234";
-                msg.Show();
-                MessageBox = true; Console.WriteLine(msg.getResponseCode());
-            }
-           
-
         }
     }
 }

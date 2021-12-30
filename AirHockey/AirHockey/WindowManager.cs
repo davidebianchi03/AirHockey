@@ -11,10 +11,11 @@ namespace AirHockey
     class WindowManager
     {
         public UIWindow window { get; set; } = null;
-        public int PageDisplayed { get; set; } = UsernameInputPage;//Schermata visualizzata adesso sullo schermo
+        public int PageDisplayed { get; set; } = GamePage;//Schermata visualizzata adesso sullo schermo
         public const int UsernameInputPage = 0;//ID della schermata di inserimento dello Username
         public const int EstabishConnectionPage = 1;//ID della schermata per inviare una richiesta di connessione verso un altro host
         public const int AcceptConnectionPage = 2;//ID della schermata per accettare la richiesta di connessione proveniente da un altro host
+        public const int GamePage = 3; 
 
         public WindowManager()
         {
@@ -30,7 +31,7 @@ namespace AirHockey
 
             SharedSettings settings = SharedSettings.GetInstance();
             //Creo la finestra
-            VideoMode mode = new VideoMode(1000, 750);//imposto la dimensione della finestra
+            VideoMode mode = new VideoMode(1000, 900);//imposto la dimensione della finestra
             window = new UIWindow(mode, "Air Hockey");
             //imposto l'icona della finestra
             Image image = new Image(settings.resourcesPath + "logo.png");
@@ -43,6 +44,8 @@ namespace AirHockey
             PageEstablishConnection establishConnection = null;
             //creo l'oggetto che serve a disegnare e gestire la pagina per accettare/rifiutare una richiesta di connessione
             PageAcceptConnection acceptConnection = null;
+            //creo l'oggetto che serve a disegnare e gestire la pagina per giocare
+            PageGame pageGame = null;
 
             while (window.IsOpen)//ciclo principale della finestra
             {
@@ -61,6 +64,7 @@ namespace AirHockey
                         setUsernamePage.Draw();
                         establishConnection = null;
                         acceptConnection = null;
+                        pageGame = null;
                         break;
 
                     case EstabishConnectionPage:
@@ -73,16 +77,29 @@ namespace AirHockey
                         establishConnection.Draw();
                         setUsernamePage = null;
                         acceptConnection = null;
+                        pageGame = null;
                         break;
                     case AcceptConnectionPage:
                         if(acceptConnection == null)
                         {
-                            //inizializzo l'oggetto che server a disegnare e gestire la pagina per accettare/rifiutare richieste di connessione
+                            //inizializzo l'oggetto che serve a disegnare e gestire la pagina per accettare/rifiutare richieste di connessione
                             acceptConnection = new PageAcceptConnection(window);
                         }
                         acceptConnection.Draw();
                         establishConnection = null;
                         setUsernamePage = null;
+                        pageGame = null;
+                        break;
+                    case GamePage:
+                        if(pageGame == null)
+                        {
+                            //inizializzo l'oggetto che serve a disegnare e gestire la pagina del gioco
+                            pageGame = new PageGame(window);
+                        }
+                        pageGame.Draw();
+                        establishConnection = null;
+                        setUsernamePage = null;
+                        acceptConnection = null;
                         break;
                 }
 
