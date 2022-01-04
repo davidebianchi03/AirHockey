@@ -34,6 +34,11 @@ namespace AirHockey
          */
         public string hostRequestorUsername { get; set; } = "";
 
+        /*
+            Oggetto che serve per gestire la mia manopola    
+        */
+        public MyHandle MyHandle { get; set; }
+
         private SharedSettings()
         {
             resourcesPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString() + "\\resources\\";

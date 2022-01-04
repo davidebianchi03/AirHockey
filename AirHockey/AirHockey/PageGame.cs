@@ -42,6 +42,9 @@ namespace AirHockey
             //creo l'oggetto della pallina
             Ball = new Ball(parentWindow, playgroundSize, goalWidth);
             Ball.StartMovingBall();
+            //creo l'oggetto della mia manopola
+            settings.MyHandle = new MyHandle(parentWindow, playgroundSize, Ball);
+            settings.MyHandle.StartMovingListenerThread();
         }
 
         public void Draw()
@@ -86,6 +89,9 @@ namespace AirHockey
             //disegno la pallina
             Ball.playgroundPosition = playground.Position;
             Ball.DrawBall(playground.Position);
+            //disegno la mia manopola
+            settings.MyHandle.PlaygroundPosition = playground.Position;
+            settings.MyHandle.Draw();
         }
     }
 }
