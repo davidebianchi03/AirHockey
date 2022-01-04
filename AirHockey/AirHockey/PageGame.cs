@@ -40,7 +40,7 @@ namespace AirHockey
             opponentGoal.Size = new SFML.System.Vector2f(goalWidth, 50);
             opponentGoal.Texture = textureGoal;
             //creo l'oggetto della pallina
-            Ball = new Ball(parentWindow, playgroundSize);
+            Ball = new Ball(parentWindow, playgroundSize, goalWidth);
             Ball.StartMovingBall();
         }
 
