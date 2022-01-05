@@ -39,6 +39,11 @@ namespace AirHockey
         */
         public MyHandle MyHandle { get; set; }
 
+        /*   Porta utilizzata dal peer per ascoltare e inviare i messaggi   */
+        public int PortNumber {get;} = 2003;
+
+        public SendAndReceive sendAndReceive { get; set; } = null;
+
         private SharedSettings()
         {
             resourcesPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString() + "\\resources\\";

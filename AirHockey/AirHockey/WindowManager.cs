@@ -11,7 +11,7 @@ namespace AirHockey
     class WindowManager
     {
         public UIWindow window { get; set; } = null;
-        public int PageDisplayed { get; set; } = GamePage;//Schermata visualizzata adesso sullo schermo
+        public int PageDisplayed { get; set; } = UsernameInputPage;//Schermata visualizzata adesso sullo schermo
         public const int UsernameInputPage = 0;//ID della schermata di inserimento dello Username
         public const int EstabishConnectionPage = 1;//ID della schermata per inviare una richiesta di connessione verso un altro host
         public const int AcceptConnectionPage = 2;//ID della schermata per accettare la richiesta di connessione proveniente da un altro host
