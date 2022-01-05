@@ -73,7 +73,7 @@ namespace AirHockey
                     settings.hostRequestorUsername = e.message.Body;
                     settings.windowManager.PageDisplayed = WindowManager.AcceptConnectionPage;
                 }
-                else if(e.message.Command != "y" || e.message.Command != "n")
+                else if (e.message.Command != "y" && e.message.Command != "n")
                 {
                     //Se mi viene inviato un comando che non è quello di connessione invio il comando di chiusura della connessione
                     Message response = new Message();
@@ -102,17 +102,13 @@ namespace AirHockey
                 sendAndReceive.SendMessage(requestMsg);
                 //aspetto la risposta da parte dell'altro host
                 lastMessage = null;
-                do
+
+                while (lastMessage == null)
                 {
-                    while (lastMessage == null)
-                    {
-                        Thread.Sleep(10);
-                        //Console.WriteLine("Waiting");
-                    }
-                    
-
-                } while ((lastMessage.Command != "y" && lastMessage.Command != "n") || lastMessage.sourceIP != IPAddress.Parse(ipAddress));
-
+                    Thread.Sleep(10);
+                    //Console.WriteLine("Waiting");
+                }
+                Console.WriteLine("procedo");
                 if (lastMessage.Command == "y")
                 {
                     //Risposta affermativa
