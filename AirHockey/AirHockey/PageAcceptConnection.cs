@@ -1,7 +1,9 @@
 ﻿using SFML.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using System.Threading;
 using window_utilities;
 
 namespace AirHockey
@@ -51,12 +53,73 @@ namespace AirHockey
 
         private void BtnNoCallback(object sender, EventArgs e)
         {
-            Console.WriteLine("no");
+            //Rifiuto la connessione
+            //rispondo con la lettera n;
+            SharedSettings settings = SharedSettings.GetInstance();
+            SendAndReceive sendAndReceive = settings.sendAndReceive;
+            try
+            {
+                Message response = new Message();
+                response.Command = "n";
+                response.Body = "";
+                response.destinationIP = IPAddress.Parse(settings.hostRequestorIP);
+                sendAndReceive.SendMessage(response);
+            }
+            catch (Exception ex) { }
+
+            settings.hostRequestorUsername = "";
+            settings.hostRequestorIP = "";
+            settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
         }
 
         private void BtnYesCallback(object sender, EventArgs e)
         {
-            Console.WriteLine("yes");
+            //Accetto la connessione
+            //rispondo con la lettera y e il mio username
+            SharedSettings settings = SharedSettings.GetInstance();
+            SendAndReceive sendAndReceive = settings.sendAndReceive;
+            sendAndReceive.MessageReceived += MessageReceived;
+            try
+            {
+                Message response = new Message();
+                response.Command = "y";
+                response.Body = settings.username;
+                response.destinationIP = IPAddress.Parse(settings.hostRequestorIP);
+                sendAndReceive.SendMessage(response);
+            }
+            catch (Exception ex) { }
+
+            lastHandShakeMessageReceived = false;
+            //aspetto fino a quando non ricevo una risposta da parte dell'altro host (handshake a 3 vie)
+            while (lastHandShakeMessageReceived == false)
+            {
+                Thread.Sleep(10);
+            }
+            //Console.WriteLine(lastHandShakeMessage.Command);
+            //se è positiva procedo
+            if (lastHandShakeMessage.Command == "y")
+            {
+                settings.hostRequestorUsername = "";
+                settings.hostRequestorIP = "";
+                //Visualizzo la schermata di gioco
+                settings.windowManager.PageDisplayed = WindowManager.GamePage;
+            }
+            else
+            {
+                //se è negativa è come se avessi rifiutato io
+                settings.hostRequestorUsername = "";
+                settings.hostRequestorIP = "";
+                //Visualizzo la schermata precedente
+                settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
+            }
+        }
+
+        Message lastHandShakeMessage;
+        bool lastHandShakeMessageReceived;
+        private void MessageReceived(object sender, MessageReceivedArgs e)
+        {
+            lastHandShakeMessage = e.message;
+            lastHandShakeMessageReceived = true;
         }
 
         public void Draw()

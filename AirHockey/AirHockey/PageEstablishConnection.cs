@@ -41,11 +41,45 @@ namespace AirHockey
             btnSendRequest.Position = new SFML.System.Vector2f(windowCenterX - (btnSendRequest.Size.X / 2), windowCenterY - (borderHeight / 2) + 480);//-> da sistemare
             btnSendRequest.textSize = 18;
             btnSendRequest.ButtonPressed += ButtonClickedCallBack;
+            /*   Mi metto in ascolto di eventuali richieste di connessione   */
+            if(settings.sendAndReceive == null)
+            {
+                settings.sendAndReceive = new SendAndReceive();
+            }
+            settings.sendAndReceive.MessageReceived += MessageReceived;
+        }
+
+        /*   Metodo richiamato dall'evento della classe SendAndReceive quando viene ricevuto un messaggio   */
+        private void MessageReceived(object sender, MessageReceivedArgs e)
+        {
+            SharedSettings settings = SharedSettings.GetInstance();
+            SendAndReceive sendAndReceive = settings.sendAndReceive;
+            if(e.message.Command != null)
+            {
+                //controllo che il comando sia quello della connessione
+                if(e.message.Command == "c")
+                {
+                    //Se il comando è quello di richiesta della connessione
+                    //Visualizzo la schermata per accettare/rifiutare
+                    settings.hostRequestorIP = e.message.sourceIP.ToString();
+                    settings.hostRequestorUsername = e.message.Body;
+                    settings.windowManager.PageDisplayed = WindowManager.AcceptConnectionPage;
+                }
+                else
+                {
+                    //Se mi viene inviato un comando che non è quello di connessione invio il comando di chiusura della connessione
+                    Message response = new Message();
+                    response.Command = "e";
+                    response.Body = "";
+                    response.destinationIP = e.message.sourceIP;
+                    sendAndReceive.SendMessage(response);
+                }
+            }
         }
 
         private void ButtonClickedCallBack(object sender, EventArgs e)
         {
-
+            //Invio la richiesta di connessione
         }
 
         public void Draw()
