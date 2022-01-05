@@ -21,6 +21,7 @@ namespace AirHockey
         public SFML.System.Vector2f PlaygroundPosition { get; set; } = new SFML.System.Vector2f(0, 0);//posizione del campo da gioco
         private Thread movingListenerThread;//thread che ascolta e aggiorna lo spostamento della del cursore
         public Ball Ball { get; set; }
+        public SFML.System.Vector2f GlobalPosition = new SFML.System.Vector2f(0,0);//posizione della manopola sulla finestra intera
 
         public MyHandle(RenderWindow parentWindow, SFML.System.Vector2f PlaygroundSize, Ball Ball)
         {
@@ -41,15 +42,15 @@ namespace AirHockey
             //  Disegno il cerchio esterno
             CircleShape outerCircle = new CircleShape();
             outerCircle.Position = new SFML.System.Vector2f(GlobalPosition.X - Radius, GlobalPosition.Y - Radius);
-            outerCircle.Radius = Radius;
+            outerCircle.Radius = Radius - 4;
             outerCircle.FillColor = FillColor;
             outerCircle.OutlineColor = BorderColor;
-            outerCircle.OutlineThickness = 10;
+            outerCircle.OutlineThickness = 4;
             parentWindow.Draw(outerCircle);
             //  Disegno il cerchio interno
             int innerRadius = 10;
             CircleShape innerCircle = new CircleShape();
-            outerCircle.Position = new SFML.System.Vector2f(GlobalPosition.X - innerRadius, GlobalPosition.Y - innerRadius);
+            outerCircle.Position = new SFML.System.Vector2f(GlobalPosition.X - innerRadius - 3, GlobalPosition.Y - innerRadius - 3);
             outerCircle.Radius = innerRadius;
             outerCircle.FillColor = BorderColor;
             outerCircle.OutlineColor = BorderColor;
@@ -79,10 +80,12 @@ namespace AirHockey
         public void MovingListenerThreadMethod()
         {
             int updateTime = 2;//tempo ogni quanto viene aggiornata la posizione del cursore sullo schermo
+            long lastContactTicks = DateTime.Now.Ticks;
             while (parentWindow.IsOpen)
             {
                 float globalX = Mouse.GetPosition(parentWindow).X;
                 float globalY = Mouse.GetPosition(parentWindow).Y;
+                GlobalPosition = new SFML.System.Vector2f(globalX, globalY);
                 //Controllo se il cursore si trova all'interno del campo da gioco nella mia metà campo
                 if (globalX - Radius > PlaygroundPosition.X
                     && globalX + Radius < PlaygroundPosition.X + PlaygroundSize.X &&
@@ -95,63 +98,48 @@ namespace AirHockey
 
                 /* Calcolo la pallina se è andata a scontrarsi con la manopola */
                 double distance = Math.Sqrt(Math.Pow((Position.X - Ball.Position.X),2) + Math.Pow((Position.Y - Ball.Position.Y), 2));
-
-                if(distance < Radius + Ball.Radius)
+                //Console.WriteLine(DateTime.Now.Ticks);
+                if(distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500)//in ogni millisecondo ci sono 10000 ticks
                 {
-                    double new_angle = calculateNewAngle(Position.X, Position.Y, Ball.Position.X, Ball.Position.Y);
-                    Ball.Angle = new_angle;
-                    Console.WriteLine(new_angle);
+                    Ball.Angle = CalculateBallRebounceAngle();
+                    lastContactTicks = DateTime.Now.Ticks;
                 }
 
                 Thread.Sleep(updateTime);
             }
         }
 
-        private double calculateNewAngle(double malletX, double malletY, double ballPosX, double ballPosY)
+        public double CalculateBallRebounceAngle()
         {
-            double deltaY = ballPosX - malletY;
-            double deltaX = ballPosY - malletX;
-
-            // keep track if original x or y was negative so know which end direction should be negative
-            // otherwise 2 negatives will just cancel out or don't know if x or y was negative
-            int xneg = 1;
-            int yneg = 1;
-            if (deltaX < 0)
+            SharedSettings settings = SharedSettings.GetInstance();
+            /*   Calcolo in che quadrante rispetto alla manopola si trova il disco   */
+            double ballX = Ball.Position.X;
+            double ballY = Ball.Position.Y;
+            double handleX = Position.X;
+            double handleY = Position.Y;
+            
+            double tangent = Math.Atan2(ballY - handleY, ballX - handleX);
+            double newAngle = Math.PI / 2 + tangent;
+           
+            if(newAngle < 0)
             {
-                xneg = -1;
+                newAngle = ((Math.PI * 2) - (Math.PI / 2)) - newAngle;
             }
 
-            if (deltaY < 0)
-            {
-                yneg = -1;
-            }
-            deltaX = Math.Abs(deltaX);
-            deltaY = Math.Abs(deltaY);
-            if (deltaX != 0 && deltaY != 0)
-            {
-                // calculate the inverse tangent of the slope
-                double angle1 = Math.Atan(deltaX / deltaY);
-                double angle2 = 90 - angle1;
-                deltaY = Math.Sin(angle2) * yneg;
-                deltaX = Math.Sin(angle1) * xneg;
-            }
-            else if (deltaX == 0)
-            {
-                deltaY = yneg;
-            }
-            else
-            {
-                deltaX = xneg;
-            }
-
-            double angle = Math.Atan2(deltaY, deltaX);
-            if (angle < 0)
-            {
-                angle = (Math.PI * 2) + angle;
-            }
-            return angle;
+            return newAngle;
         }
 
+        /*  Metodo per convertire i gradi in radianti   */
+        public double DegreesToRadians(double degrees)
+        {
+            return (Math.PI / 180) * degrees;
+        }
+
+        /*  Metodo per convertire i radianti in gradi   */
+        public double RadiansToDegrees(double radians)
+        {
+            return radians * (180 / Math.PI);
+        }
 
 
 
