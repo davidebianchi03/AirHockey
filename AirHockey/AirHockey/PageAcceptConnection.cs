@@ -65,7 +65,9 @@ namespace AirHockey
                 response.destinationIP = IPAddress.Parse(settings.hostRequestorIP);
                 sendAndReceive.SendMessage(response);
             }
-            catch (Exception ex) { }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
 
             settings.hostRequestorUsername = "";
             settings.hostRequestorIP = "";
@@ -87,7 +89,10 @@ namespace AirHockey
                 response.destinationIP = IPAddress.Parse(settings.hostRequestorIP);
                 sendAndReceive.SendMessage(response);
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
 
             lastHandShakeMessageReceived = false;
             //aspetto fino a quando non ricevo una risposta da parte dell'altro host (handshake a 3 vie)

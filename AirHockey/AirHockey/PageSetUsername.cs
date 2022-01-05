@@ -54,8 +54,6 @@ namespace AirHockey
             settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
         }
 
-        bool MessageBox = false;
-
         /* Metodo per disegnare la pagina */
         public void Draw()
         {

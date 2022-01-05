@@ -1,7 +1,11 @@
-﻿using SFML.Graphics;
+﻿using AirHockey.window_utilities;
+using SFML.Graphics;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
+using System.Threading;
 using window_utilities;
 
 namespace AirHockey
@@ -42,22 +46,25 @@ namespace AirHockey
             btnSendRequest.textSize = 18;
             btnSendRequest.ButtonPressed += ButtonClickedCallBack;
             /*   Mi metto in ascolto di eventuali richieste di connessione   */
-            if(settings.sendAndReceive == null)
+            if (settings.sendAndReceive == null)
             {
                 settings.sendAndReceive = new SendAndReceive();
             }
             settings.sendAndReceive.MessageReceived += MessageReceived;
         }
 
+        private Message lastMessage = null;
+
         /*   Metodo richiamato dall'evento della classe SendAndReceive quando viene ricevuto un messaggio   */
         private void MessageReceived(object sender, MessageReceivedArgs e)
         {
             SharedSettings settings = SharedSettings.GetInstance();
             SendAndReceive sendAndReceive = settings.sendAndReceive;
-            if(e.message.Command != null)
+            if (e.message.Command != null)
             {
+                lastMessage = e.message;
                 //controllo che il comando sia quello della connessione
-                if(e.message.Command == "c")
+                if (e.message.Command == "c")
                 {
                     //Se il comando è quello di richiesta della connessione
                     //Visualizzo la schermata per accettare/rifiutare
@@ -65,7 +72,7 @@ namespace AirHockey
                     settings.hostRequestorUsername = e.message.Body;
                     settings.windowManager.PageDisplayed = WindowManager.AcceptConnectionPage;
                 }
-                else
+                else if(e.message.Command != "y" || e.message.Command != "n")
                 {
                     //Se mi viene inviato un comando che non è quello di connessione invio il comando di chiusura della connessione
                     Message response = new Message();
@@ -80,6 +87,56 @@ namespace AirHockey
         private void ButtonClickedCallBack(object sender, EventArgs e)
         {
             //Invio la richiesta di connessione
+            SharedSettings settings = SharedSettings.GetInstance();
+            string ipAddress = txtIpAddress.Content;
+            try
+            {
+                Message requestMsg = new Message();
+                requestMsg.Command = "c";
+                requestMsg.Body = settings.username;
+                requestMsg.destinationIP = IPAddress.Parse(ipAddress);
+                //procedo con l'invio del messaggio della richiesta di connessione
+                SendAndReceive sendAndReceive = settings.sendAndReceive;
+                sendAndReceive.SendMessage(requestMsg);
+                //aspetto la risposta da parte dell'altro host
+                lastMessage = null;
+                do
+                {
+                    while (lastMessage == null)
+                    {
+                        Thread.Sleep(10);
+                    }
+                    Console.WriteLine("Waiting");
+
+                } while ((lastMessage.Command != "y" && lastMessage.Command != "n") || lastMessage.sourceIP != IPAddress.Parse(ipAddress));
+
+                if (lastMessage.Command == "y")
+                {
+                    //Risposta affermativa
+                    //Invio la risposta dell'handshake a 3 vie
+                    Message lastMsg = new Message();
+                    lastMsg.Command = "y";
+                    lastMsg.Body = "";
+                    lastMsg.destinationIP = IPAddress.Parse(ipAddress);
+                    sendAndReceive.SendMessage(lastMsg);
+                    //vado alla pagina del gioco
+                    settings.windowManager.PageDisplayed = WindowManager.GamePage;
+                }
+                else
+                {
+                    //Risposta negativa
+                    //Non faccio nulla
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //Viene data eccezione se non è valido l'indirizzo IP inserito
+                VideoMode messageBoxMode = new VideoMode(450, 150);
+                UIMessageBox errorMessageBox = new UIMessageBox(messageBoxMode, "Errore", "L'indirizzo ip inserito non è valido", window, settings.font);
+                errorMessageBox.Show();
+                Console.Write(ex.Message);
+            }
         }
 
         public void Draw()

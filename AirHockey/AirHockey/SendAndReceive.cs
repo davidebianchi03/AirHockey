@@ -40,7 +40,10 @@ namespace AirHockey
                     args.message = msg;
                     MessageReceived?.Invoke(this, args);
                 }
-                catch (Exception ex) { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
             }
         }
 
