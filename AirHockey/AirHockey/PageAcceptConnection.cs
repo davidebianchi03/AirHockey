@@ -99,6 +99,12 @@ namespace AirHockey
             //se è positiva procedo
             if (lastHandShakeMessage.Command == "y")
             {
+                
+                //Inserisco i dati della connessione nell'oggetto connection
+                settings.Connection = new Connection();
+                settings.Connection.OpponentUsername = settings.hostRequestorUsername;
+                settings.Connection.OpponentIP = IPAddress.Parse(settings.hostRequestorIP);
+                //cancello i dati temporanei
                 settings.hostRequestorUsername = "";
                 settings.hostRequestorIP = "";
                 //Visualizzo la schermata di gioco

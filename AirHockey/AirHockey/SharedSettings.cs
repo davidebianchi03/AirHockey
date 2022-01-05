@@ -42,7 +42,11 @@ namespace AirHockey
         /*   Porta utilizzata dal peer per ascoltare e inviare i messaggi   */
         public int PortNumber {get;} = 2003;
 
+        /*   Oggetto utilizzato per ricevere ed inviare i messaggi   */
         public SendAndReceive sendAndReceive { get; set; } = null;
+
+        /*   Oggetto che contiene tutti i dati riguardanti la connessione in corso   */
+        public Connection Connection { get; set; } = null;
 
         private SharedSettings()
         {
