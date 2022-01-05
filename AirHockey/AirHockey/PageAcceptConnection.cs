@@ -49,6 +49,8 @@ namespace AirHockey
             btnNo.Size = new SFML.System.Vector2f(75, 50);
             btnNo.Position = new SFML.System.Vector2f(windowCenterX + 25, windowCenterY - (borderHeight / 2) + 480);
             btnNo.ButtonPressed += BtnNoCallback;
+            SendAndReceive sendAndReceive = settings.sendAndReceive;
+            sendAndReceive.MessageReceived += MessageReceived;
         }
 
         private void BtnNoCallback(object sender, EventArgs e)
@@ -65,9 +67,7 @@ namespace AirHockey
                 response.destinationIP = IPAddress.Parse(settings.hostRequestorIP);
                 sendAndReceive.SendMessage(response);
             }
-            catch (Exception ex) {
-                Console.WriteLine(ex.Message);
-            }
+            catch (Exception ex) { }
 
             settings.hostRequestorUsername = "";
             settings.hostRequestorIP = "";
@@ -78,9 +78,9 @@ namespace AirHockey
         {
             //Accetto la connessione
             //rispondo con la lettera y e il mio username
+            Console.WriteLine("Y");
             SharedSettings settings = SharedSettings.GetInstance();
             SendAndReceive sendAndReceive = settings.sendAndReceive;
-            sendAndReceive.MessageReceived += MessageReceived;
             try
             {
                 Message response = new Message();
@@ -89,9 +89,9 @@ namespace AirHockey
                 response.destinationIP = IPAddress.Parse(settings.hostRequestorIP);
                 sendAndReceive.SendMessage(response);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
+            catch (Exception ex) 
+            { 
+                Console.WriteLine(ex.Message);
             }
 
             lastHandShakeMessageReceived = false;
@@ -100,11 +100,10 @@ namespace AirHockey
             {
                 Thread.Sleep(10);
             }
-            //Console.WriteLine(lastHandShakeMessage.Command);
             //se è positiva procedo
             if (lastHandShakeMessage.Command == "y")
             {
-                
+
                 //Inserisco i dati della connessione nell'oggetto connection
                 settings.Connection = new Connection();
                 settings.Connection.OpponentUsername = settings.hostRequestorUsername;
@@ -129,6 +128,8 @@ namespace AirHockey
         bool lastHandShakeMessageReceived;
         private void MessageReceived(object sender, MessageReceivedArgs e)
         {
+
+            Console.WriteLine(e.message.Command);
             lastHandShakeMessage = e.message;
             lastHandShakeMessageReceived = true;
         }

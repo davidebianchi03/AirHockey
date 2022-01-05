@@ -17,7 +17,7 @@ namespace AirHockey
         private const int borderWidth = 600;
         private const int borderHeight = 600;
         private UITextInput txtIpAddress;
-        private UIButton btnSendRequest;
+        public UIButton btnSendRequest;
 
         /* Costruttore */
         public PageEstablishConnection(RenderWindow window)
@@ -60,6 +60,7 @@ namespace AirHockey
         {
             SharedSettings settings = SharedSettings.GetInstance();
             SendAndReceive sendAndReceive = settings.sendAndReceive;
+            //Console.WriteLine(e.message.Command);
             if (e.message.Command != null)
             {
                 lastMessage = e.message;
@@ -86,6 +87,7 @@ namespace AirHockey
 
         private void ButtonClickedCallBack(object sender, EventArgs e)
         {
+            //Console.WriteLine("button pressed");
             //Invio la richiesta di connessione
             SharedSettings settings = SharedSettings.GetInstance();
             string ipAddress = txtIpAddress.Content;
@@ -105,8 +107,9 @@ namespace AirHockey
                     while (lastMessage == null)
                     {
                         Thread.Sleep(10);
+                        //Console.WriteLine("Waiting");
                     }
-                    Console.WriteLine("Waiting");
+                    
 
                 } while ((lastMessage.Command != "y" && lastMessage.Command != "n") || lastMessage.sourceIP != IPAddress.Parse(ipAddress));
 
@@ -178,6 +181,11 @@ namespace AirHockey
             txtIpAddress.draw();
             /* Disegno il pulsante per conferma lo Username */
             btnSendRequest.draw();
+        }
+
+        public void RemoveButtonPressedEvent()
+        {
+            btnSendRequest.ButtonPressed -= ButtonClickedCallBack;
         }
     }
 }

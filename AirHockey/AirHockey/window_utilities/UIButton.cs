@@ -123,6 +123,8 @@ namespace window_utilities
                 new_position = new Vector2f(original_position.X + 2, original_position.Y + 2);
                 Size = new_size;
                 Position = new_position;
+                //Console.WriteLine("pressed");
+                
             }
 
         }
@@ -135,7 +137,6 @@ namespace window_utilities
             if ((mouse_x >= Position.X && mouse_y >= Position.Y && mouse_x <= Position.X + Size.X && mouse_y <= Position.Y + Size.Y) && Enable)
             {
                 ButtonPressed?.Invoke(this, EventArgs.Empty);//richiamo l'evento
-
                 Size = original_size;
                 Position = original_position;
             }

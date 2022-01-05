@@ -11,7 +11,7 @@ namespace AirHockey
     class WindowManager
     {
         public UIWindow window { get; set; } = null;
-        public int PageDisplayed { get; set; } = UsernameInputPage;  //UsernameInputPage;//Schermata visualizzata adesso sullo schermo
+        public int PageDisplayed { get; set; } = 0;  //UsernameInputPage;//Schermata visualizzata adesso sullo schermo
         public const int UsernameInputPage = 0;//ID della schermata di inserimento dello Username
         public const int EstabishConnectionPage = 1;//ID della schermata per inviare una richiesta di connessione verso un altro host
         public const int AcceptConnectionPage = 2;//ID della schermata per accettare la richiesta di connessione proveniente da un altro host
@@ -59,12 +59,13 @@ namespace AirHockey
                         if (setUsernamePage == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per l'inserimento del proprio username
+                            settings.sendAndReceive.ClearEvents();
                             setUsernamePage = new PageSetUsername(window);
                         }
-                        setUsernamePage.Draw();
                         establishConnection = null;
                         acceptConnection = null;
                         pageGame = null;
+                        setUsernamePage.Draw();
                         break;
 
                     case EstabishConnectionPage:
@@ -72,34 +73,42 @@ namespace AirHockey
                         if(establishConnection == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
+                            settings.sendAndReceive.ClearEvents();
                             establishConnection = new PageEstablishConnection(window);
-                        }
-                        establishConnection.Draw();
+                        }                        
                         setUsernamePage = null;
                         acceptConnection = null;
                         pageGame = null;
+                        establishConnection.Draw();
                         break;
                     case AcceptConnectionPage:
-                        if(acceptConnection == null)
+                        if (establishConnection != null)
+                        {
+                            //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
+                            establishConnection.btnSendRequest.Position = new SFML.System.Vector2f(0,0);//sposto il pulsante di invio richiesta perchè sa solo lui perchè si bugga
+                        }                        
+                        if (acceptConnection == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per accettare/rifiutare richieste di connessione
+                            settings.sendAndReceive.ClearEvents();
                             acceptConnection = new PageAcceptConnection(window);
                         }
-                        acceptConnection.Draw();
                         establishConnection = null;
                         setUsernamePage = null;
-                        pageGame = null;
+                        pageGame = null;                       
+                        acceptConnection.Draw();
                         break;
                     case GamePage:
                         if(pageGame == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina del gioco
+                            settings.sendAndReceive.ClearEvents();
                             pageGame = new PageGame(window);
                         }
-                        pageGame.Draw();
                         establishConnection = null;
                         setUsernamePage = null;
                         acceptConnection = null;
+                        pageGame.Draw();
                         break;
                 }
 

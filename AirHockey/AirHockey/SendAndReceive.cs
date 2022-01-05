@@ -35,10 +35,12 @@ namespace AirHockey
                 {
                     byte[] dataReceived = udpClient.Receive(ref receiveIP);
                     string stringReceived = Encoding.ASCII.GetString(dataReceived);
+                    //Console.WriteLine(stringReceived);  
                     Message msg = Message.CreateFromCsv(receiveIP.Address, null, stringReceived);
                     MessageReceivedArgs args = new MessageReceivedArgs();
                     args.message = msg;
                     MessageReceived?.Invoke(this, args);
+                    Console.WriteLine("Received: " + stringReceived);
                 }
                 catch (Exception ex)
                 {
@@ -58,7 +60,13 @@ namespace AirHockey
         {
             SharedSettings settings = SharedSettings.GetInstance();
             byte[] dataToSend = Encoding.ASCII.GetBytes(message.ToCSV());
+            Console.WriteLine("Send: " + message.ToCSV());
             udpClient.Send(dataToSend, dataToSend.Length, message.destinationIP.ToString(), settings.PortNumber);
+        }
+
+        public void ClearEvents()
+        {
+            this.MessageReceived = null;
         }
 
         /*   Evento che viene richiamato quando viene ricevuto un messaggio   */
