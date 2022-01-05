@@ -48,6 +48,8 @@ namespace AirHockey
         /*   Oggetto che contiene tutti i dati riguardanti la connessione in corso   */
         public Connection Connection { get; set; } = null;
 
+        public OpponentHandle opponentHandle { get; set; } = null;
+
         private SharedSettings()
         {
             resourcesPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString() + "\\resources\\";
