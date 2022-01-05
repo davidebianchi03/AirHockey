@@ -45,6 +45,7 @@ namespace AirHockey
             //creo l'oggetto della mia manopola
             settings.MyHandle = new MyHandle(parentWindow, playgroundSize, Ball);
             settings.MyHandle.StartMovingListenerThread();
+            settings.opponentHandle = new OpponentHandle(parentWindow, playgroundSize);
         }
 
         public void Draw()
@@ -92,6 +93,8 @@ namespace AirHockey
             //disegno la mia manopola
             settings.MyHandle.PlaygroundPosition = playground.Position;
             settings.MyHandle.Draw();
+            settings.opponentHandle.PlaygroundPosition = playground.Position;
+            settings.opponentHandle.Draw();
         }
     }
 }

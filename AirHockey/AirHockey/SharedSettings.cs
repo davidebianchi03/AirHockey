@@ -44,6 +44,11 @@ namespace AirHockey
 
         public SendAndReceive sendAndReceive { get; set; } = null;
 
+        public OpponentHandle opponentHandle { get; set; } = null;
+
+
+
+
         private SharedSettings()
         {
             resourcesPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString() + "\\resources\\";
