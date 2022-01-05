@@ -216,13 +216,19 @@ namespace window_utilities
                         Content = Content.Remove(cursorPosition, 1);
                     }
                 }
+                else if(e.Code == Keyboard.Key.Period)
+                {
+                    //punto
+                    Content = Content.Insert(cursorPosition, ".");
+                    cursorPosition++;
+                }
                 else
                 {
                     Console.Beep(500, 100);
                 }
 
                 KeyPressed?.Invoke(this, EventArgs.Empty);
-
+                
             }
         }
 

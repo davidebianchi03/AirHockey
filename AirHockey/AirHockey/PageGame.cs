@@ -19,6 +19,8 @@ namespace AirHockey
         public int myPoints { get; set; } = 0;//i miei punti
         public int opponentPoints { get; set; } = 0;//i punti dell'avversario
         public Ball Ball { get; set; }
+        private HandleUpdate handleUpdate;//aggiornamento della posizione della manopola dell'avversario
+
         public PageGame(RenderWindow parentWindow)
         {
             SharedSettings settings = SharedSettings.GetInstance();
@@ -46,6 +48,8 @@ namespace AirHockey
             settings.MyHandle = new MyHandle(parentWindow, playgroundSize, Ball);
             settings.MyHandle.StartMovingListenerThread();
             settings.opponentHandle = new OpponentHandle(parentWindow, playgroundSize);
+            //creo l'oggetto che aggiorna la posizione della manopola
+            handleUpdate = new HandleUpdate(settings.opponentHandle);
         }
 
         public void Draw()
@@ -93,6 +97,7 @@ namespace AirHockey
             //disegno la mia manopola
             settings.MyHandle.PlaygroundPosition = playground.Position;
             settings.MyHandle.Draw();
+            //disegno la manopola dell'avversario
             settings.opponentHandle.PlaygroundPosition = playground.Position;
             settings.opponentHandle.Draw();
         }

@@ -78,7 +78,7 @@ namespace AirHockey
         {
             //Accetto la connessione
             //rispondo con la lettera y e il mio username
-            Console.WriteLine("Y");
+            //Console.WriteLine("Y");
             SharedSettings settings = SharedSettings.GetInstance();
             SendAndReceive sendAndReceive = settings.sendAndReceive;
             try
@@ -129,7 +129,7 @@ namespace AirHockey
         private void MessageReceived(object sender, MessageReceivedArgs e)
         {
 
-            Console.WriteLine(e.message.Command);
+            //Console.WriteLine(e.message.Command);
             lastHandShakeMessage = e.message;
             lastHandShakeMessageReceived = true;
         }

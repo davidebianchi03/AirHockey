@@ -18,19 +18,17 @@ namespace AirHockey
             SendAndReceive sendAndReceive = settings.sendAndReceive;
             sendAndReceive.MessageReceived += MessageReceived;
             this.o = o;
-
-
         }
 
         private void MessageReceived(object sender, MessageReceivedArgs e)
         {
-            
+            SharedSettings settings = SharedSettings.GetInstance();
             if (e.message.Command != null)
             {
-                //controllo che il comando sia quello della connessione
-                if (e.message.Command == "m")
+                //controllo che il comando sia quello della manopola spostata e che l'ip sia corretto
+                if (e.message.Command == "m" && e.message.sourceIP == settings.Connection.OpponentIP)
                 {
-                    //Se il comando è quello di richiesta della connessione
+                    //Se il comando è quello della manopola spostata
                     //salvo le coordinate che mi sono state mandate
                     string[] coordinate = e.message.Body.Split(';');
                     x = float.Parse(coordinate[0]);
@@ -41,10 +39,7 @@ namespace AirHockey
                     y = Math.Abs(y - o.PlaygroundSize.Y);
                     x = Math.Abs(o.PlaygroundSize.X - x);
 
-
-
                     o.Position = new SFML.System.Vector2f(x,y);
-                  
                 }
                 
             }

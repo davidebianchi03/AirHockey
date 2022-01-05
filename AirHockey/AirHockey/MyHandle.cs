@@ -22,6 +22,7 @@ namespace AirHockey
         private Thread movingListenerThread;//thread che ascolta e aggiorna lo spostamento della del cursore
         public Ball Ball { get; set; }
         public SFML.System.Vector2f GlobalPosition = new SFML.System.Vector2f(0,0);//posizione della manopola sulla finestra intera
+        public SFML.System.Vector2f LastPosition = new SFML.System.Vector2f(0, 0);//ultima posizione registrata del cursore
 
         public MyHandle(RenderWindow parentWindow, SFML.System.Vector2f PlaygroundSize, Ball Ball)
         {
@@ -81,6 +82,8 @@ namespace AirHockey
         {
             int updateTime = 2;//tempo ogni quanto viene aggiornata la posizione del cursore sullo schermo
             long lastContactTicks = DateTime.Now.Ticks;
+            SharedSettings settings = SharedSettings.GetInstance();
+
             while (parentWindow.IsOpen)
             {
                 float globalX = Mouse.GetPosition(parentWindow).X;
@@ -103,6 +106,20 @@ namespace AirHockey
                 {
                     Ball.Angle = CalculateBallRebounceAngle();
                     lastContactTicks = DateTime.Now.Ticks;
+                }
+
+                /*   Controllo se è cambiata la posizione del cursore e in caso invio la nuova posizione   */
+                if (LastPosition.X != Position.X || LastPosition.Y != Position.Y)
+                {
+                    LastPosition = Position;
+                    //invio il messaggio con la nuova posizione
+                    SendAndReceive sendAndReceive = settings.sendAndReceive;
+                    Message newHandlePosMessage = new Message();
+                    newHandlePosMessage.Command = "m";
+                    string body = Position.X.ToString() + ";" + Position.Y.ToString();
+                    newHandlePosMessage.Body = body;
+                    newHandlePosMessage.destinationIP = settings.Connection.OpponentIP;
+                    sendAndReceive.SendMessage(newHandlePosMessage);
                 }
 
                 Thread.Sleep(updateTime);

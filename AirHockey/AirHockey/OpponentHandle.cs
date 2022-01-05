@@ -11,19 +11,16 @@ namespace AirHockey
         public Color FillColor { get; set; } = new Color(226, 5, 5);//colore della manopola
         public Color BorderColor { get; set; } = new Color(254, 127, 0);//colore del bordo della manopola
         public int Radius { get; set; } = 40;//raggio della manopola in pixels
-        public SFML.System.Vector2f Position { get; set; } = new SFML.System.Vector2f(150, 150);//Posizione della pallina all'interno del campo da gioco
+        public SFML.System.Vector2f Position { get; set; } = new SFML.System.Vector2f(0, 0);//Posizione della pallina all'interno del campo da gioco
         public SFML.System.Vector2f PlaygroundSize { get; set; }//dimensione del campo da gioco
         public SFML.System.Vector2f PlaygroundPosition { get; set; } = new SFML.System.Vector2f(0, 0);//posizione del campo da gioco
        
-       
-        
-
         public OpponentHandle(RenderWindow parentWindow, SFML.System.Vector2f PlaygroundSize)
         {
             this.parentWindow = parentWindow;
             this.PlaygroundSize = PlaygroundSize;
           
-            this.Position = new SFML.System.Vector2f((PlaygroundSize.X / 2), (PlaygroundSize.Y / 2) + Radius + 50);
+            this.Position = new SFML.System.Vector2f(Radius + 10, Radius + 10);
             
         }
 

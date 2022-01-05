@@ -108,7 +108,6 @@ namespace AirHockey
                     Thread.Sleep(10);
                     //Console.WriteLine("Waiting");
                 }
-                Console.WriteLine("procedo");
                 if (lastMessage.Command == "y")
                 {
                     //Risposta affermativa
