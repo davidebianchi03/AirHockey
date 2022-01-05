@@ -26,7 +26,7 @@ namespace AirHockey
             if (e.message.Command != null)
             {
                 //controllo che il comando sia quello della manopola spostata e che l'ip sia corretto
-                if (e.message.Command == "m" && e.message.sourceIP == settings.Connection.OpponentIP)
+                if (e.message.Command == "m" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
                 {
                     //Se il comando è quello della manopola spostata
                     //salvo le coordinate che mi sono state mandate

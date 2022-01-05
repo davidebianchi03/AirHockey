@@ -91,12 +91,14 @@ namespace AirHockey
             //Invio la richiesta di connessione
             SharedSettings settings = SharedSettings.GetInstance();
             string ipAddress = txtIpAddress.Content;
+            
             try
             {
                 Message requestMsg = new Message();
                 requestMsg.Command = "c";
                 requestMsg.Body = settings.username;
                 requestMsg.destinationIP = IPAddress.Parse(ipAddress);
+                string username = requestMsg.Body;
                 //procedo con l'invio del messaggio della richiesta di connessione
                 SendAndReceive sendAndReceive = settings.sendAndReceive;
                 sendAndReceive.SendMessage(requestMsg);
@@ -119,6 +121,9 @@ namespace AirHockey
                     sendAndReceive.SendMessage(lastMsg);
                     //vado alla pagina del gioco
                     settings.windowManager.PageDisplayed = WindowManager.GamePage;
+                    settings.Connection = new Connection();
+                    settings.Connection.OpponentUsername = username;
+                    settings.Connection.OpponentIP = IPAddress.Parse(ipAddress);
                 }
                 else
                 {
