@@ -4,6 +4,7 @@ using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using window_utilities;
 
 namespace AirHockey
@@ -18,7 +19,8 @@ namespace AirHockey
         private const int borderHeight = 600;
         public UIButton btnRematch;
         public UIButton btnEndConnection;
-
+        private bool RematchResponseReceived;
+        private Thread showMessageThread;
         public PageFinish(RenderWindow parentWindow)
         {
             float windowCenterX = parentWindow.Size.X / 2;//centro della finestra sull'asse delle X
@@ -46,6 +48,7 @@ namespace AirHockey
             btnEndConnection.textSize = 18;
             btnEndConnection.ButtonPressed += ButtonCloseConnPressedCallback;
             settings.sendAndReceive.MessageReceived += MessageReceivedCallback;
+            RematchResponseReceived = false;
         }
 
         /* Metodo richiamato quando viene ricevuto un messaggio */
@@ -62,6 +65,19 @@ namespace AirHockey
                 messageBox.Show();
                 //visualizzo la pagina per stabilire la connessione
                 settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
+                if(showMessageThread != null)
+                {
+                    showMessageThread.Abort();
+                    showMessageThread = null;
+                }
+            }
+            else if(settings.Connection != null && e.message.Command == "r" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            {
+                //comando rematch
+            }
+            else if (settings.Connection != null && e.message.Command == "y" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            {
+                RematchResponseReceived = true;
             }
         }
 
@@ -78,6 +94,7 @@ namespace AirHockey
                 closeConnMsg.destinationIP = settings.Connection.OpponentIP;
                 settings.sendAndReceive.SendMessage(closeConnMsg);
             }
+            
             //cambio pagina
             settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
         }
@@ -85,7 +102,41 @@ namespace AirHockey
         /*   Metodo richiamato quando viene premuto il pulsante di rematch   */
         private void ButtonRematchPressedCallback(object sender, EventArgs e)
         {
-            Console.WriteLine("Rematch");
+            SharedSettings settings = SharedSettings.GetInstance();
+            if(settings.Connection != null)
+            {
+                //invio il messaggio di rematch
+                Message rematchMsg = new Message();
+                rematchMsg.Command = "r";
+                rematchMsg.Body = "";
+                rematchMsg.destinationIP = settings.Connection.OpponentIP;
+                settings.sendAndReceive.SendMessage(rematchMsg);
+                //aspetto per la risposta
+                RematchResponseReceived = false;
+                VideoMode msgMode = new VideoMode(500, 150);
+                UIMessageBox messageWait = new UIMessageBox(msgMode, "Rematch", "Waiting...", parentWindow, settings.font);
+                showMessageThread = new Thread(delegate ()
+                {
+                    messageWait.Show();
+                });
+                while(showMessageThread != null && !RematchResponseReceived)
+                {
+                    if (messageWait.IsOpen)
+                    {
+                        messageWait.Show();
+                    }
+                    Thread.Sleep(10);
+                }
+                messageWait.IsOpen = false;
+
+                if (RematchResponseReceived)
+                {
+                    //se la risposta è positiva vado alla pagina del gioco
+                    settings.Connection.myPoints = 0;
+                    settings.Connection.OpponentsPoints = 0;
+                    settings.windowManager.PageDisplayed = WindowManager.GamePage;
+                }
+            }
         }
 
         /* Metodo per disegnare la pagina */
