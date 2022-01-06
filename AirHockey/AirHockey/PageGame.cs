@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using window_utilities;
 
 namespace AirHockey
@@ -21,7 +22,6 @@ namespace AirHockey
         private HandleUpdate handleUpdate;//aggiornamento della posizione della manopola dell'avversario
         private BallUpdate ballUpdate;//aggiornamento della posizione della pallina
         private bool GoalSuffered = false;
-        private UIButton CloseGoalSufferedWindow = null;
         public PageGame(RenderWindow parentWindow)
         {
             SharedSettings settings = SharedSettings.GetInstance();
@@ -54,7 +54,7 @@ namespace AirHockey
             //creo l'oggetto che aggiorna la posizione della pallina
             ballUpdate = new BallUpdate(Ball);
             /*   Se sono stato io a richiedere la connessione invio la posizione iniziale della pallina   */
-            
+
             if (settings.Connection.IEstablish)
             {
                 //genero l'angolo random della pallina
@@ -71,26 +71,16 @@ namespace AirHockey
             //Richiamo l'evento che mi indica quando subisco un goal
             Ball.GoalSuffered += GoalSufferedCallback;
         }
-        
+
         /*  Metodo che viene richiamato dall'evento del goal subito  */
         private void GoalSufferedCallback(object sender, EventArgs e)
         {
-            SharedSettings settings = SharedSettings.GetInstance();
-            if (!GoalSuffered)
+            Thread t = new Thread(delegate ()
             {
+                SharedSettings settings = SharedSettings.GetInstance();
                 /*   Creo il pulsante per chuidere la finestra   */
                 float windowCenterX = parentWindow.Size.X / 2;
                 float windowCenterY = parentWindow.Size.Y / 2;
-                CloseGoalSufferedWindow = null;
-                CloseGoalSufferedWindow = new UIButton(parentWindow, "Chiudi", settings.font);
-                CloseGoalSufferedWindow.BorderThickness = 2;
-                CloseGoalSufferedWindow.BorderColor = Color.White;
-                CloseGoalSufferedWindow.textColor = Color.White;
-                CloseGoalSufferedWindow.FillColor = Color.Black;
-                CloseGoalSufferedWindow.Size = new SFML.System.Vector2f(200, 50);//-> da sistemare
-                CloseGoalSufferedWindow.Position = new SFML.System.Vector2f(windowCenterX - (CloseGoalSufferedWindow.Size.X / 2), windowCenterY + 100);//-> da sistemare
-                CloseGoalSufferedWindow.textSize = 18;
-                CloseGoalSufferedWindow.ButtonPressed += CloseGoalSufferedWindowCallback;
                 /*   Invio il messaggio di goal subito   */
                 SendAndReceive sendAndReceive = settings.sendAndReceive;
                 Message GoalSufferedMsg = new Message();
@@ -98,27 +88,27 @@ namespace AirHockey
                 GoalSufferedMsg.Body = "";
                 GoalSufferedMsg.destinationIP = settings.Connection.OpponentIP;
                 sendAndReceive.SendMessage(GoalSufferedMsg);
+                /*   Palla in centro e si riparte   */
+                //Posiziono la pallina in centro
+                Ball.Speed = 300;
+                Ball.Position = new SFML.System.Vector2f(playgroundSize.X / 2, playgroundSize.Y / 2);
+                Random Rand = new Random();
+                Ball.Angle = Rand.NextDouble() * (Math.PI * 2);
+                //invio la nuova posizione e il nuovo angolo della pallina
+                Message updatePositionMsg = new Message();
+                updatePositionMsg.Command = "p";
+                string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
+                updatePositionMsg.Body = CommandParameters;
+                updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
+                sendAndReceive.SendMessage(updatePositionMsg);
                 /*   Cambio il valore alla variabile che indica se è stato subito un goal   */
                 GoalSuffered = true;
                 //Incremento il valore dei punti dell'avversario
                 settings.Connection.OpponentsPoints++;
-            }
-        }
-
-        private void CloseGoalSufferedWindowCallback(object sender, EventArgs e)
-        {
-            GoalSuffered = false;
-            //Invio il messaggio con posizione e angolo random della pallina
-            SharedSettings settings = SharedSettings.GetInstance();
-            SendAndReceive sendAndReceive = settings.sendAndReceive;
-            Message updatePositionMsg = new Message();
-            updatePositionMsg.Command = "p";
-            string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
-            updatePositionMsg.Body = CommandParameters;
-            updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
-            sendAndReceive.SendMessage(updatePositionMsg);
-            /*   Disabilito il pulsante   */
-            CloseGoalSufferedWindow.Enable = false;
+                Thread.Sleep(2000);
+                GoalSuffered = false;
+            });
+            t.Start();
         }
 
         public void Draw()
@@ -153,7 +143,7 @@ namespace AirHockey
             //disegno il numero che indica i miei punti
             Text myPointTxt = new Text(settings.Connection.myPoints.ToString(), settings.font);
             myPointTxt.Position = new SFML.System.Vector2f(playground.Position.X + playground.Size.X + 10, playground.Position.Y + (playground.Size.Y / 2) + 10);
-            
+
             myPointTxt.CharacterSize = 30;
             parentWindow.Draw(myPointTxt);
             //disegno il numero che indica i punti dell'avversario
@@ -179,18 +169,13 @@ namespace AirHockey
         /*   Metodo per disegnare la schermata quando viene subito un goal   */
         void DrawGoalSuffered()
         {
-            //Posiziono la pallina in centro
-            Ball.Speed = 300;
-            Ball.Position = new SFML.System.Vector2f(playgroundSize.X / 2, playgroundSize.Y / 2);
-            Random Rand = new Random();
-            Ball.Angle = Rand.NextDouble() * (Math.PI * 2);
             SharedSettings settings = SharedSettings.GetInstance();
             //Disegno il rettangolo che contiene tutto (250 * 500)
             float windowCenterX = parentWindow.Size.X / 2;
             float windowCenterY = parentWindow.Size.Y / 2;
             RectangleShape container = new RectangleShape();
-            container.Size = new SFML.System.Vector2f(250, 500);
-            container.Position = new SFML.System.Vector2f(windowCenterX - (container.Size.X / 2), windowCenterY - (container.Size.Y / 2));
+            container.Size = new SFML.System.Vector2f(150, 80);
+            container.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 5, playground.Position.Y + 50);
             container.FillColor = Color.Black;
             container.OutlineColor = Color.Red;
             container.OutlineThickness = 2;
@@ -199,10 +184,8 @@ namespace AirHockey
             Text text = new Text("Hai subito\nGoal", settings.font);
             text.CharacterSize = 18;
             text.FillColor = Color.White;
-            text.Position = new SFML.System.Vector2f(windowCenterX - (text.GetGlobalBounds().Width / 2), windowCenterY - 10);
+            text.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 10, playground.Position.Y + 60);
             parentWindow.Draw(text);
-            //Disegno il pulsante per chiudere la finestra
-            CloseGoalSufferedWindow.draw();
         }
     }
 }
