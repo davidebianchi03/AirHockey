@@ -1,15 +1,18 @@
 {
   "version": 2,
-  "dgSpecHash": "FjBks4eU8fo/IzWP4IVd8pPnp4RYr1k3DKWX60C7jYjWJJEEKjcPSUOoHfo0XCRoc+WfoFM/jTRPyCABJY3XIg==",
+  "dgSpecHash": "jvav90wNB+IrTYnqaCCiWsx2iuZ5NfCHc53sfH7gYzvAWR+tUyfkGstEX7vbKMhPoukgZqGhHJ5BkWh/7rmIbw==",
   "success": true,
   "projectFilePath": "F:\\git\\ProgettoTecnologieAirHockey\\AirHockey\\AirHockey\\AirHockey\\AirHockey.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Davide\\.nuget\\packages\\csfml\\2.5.0\\csfml.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\Davide\\.nuget\\packages\\sfml.audio\\2.5.0\\sfml.audio.2.5.0.nupkg.sha512",
     "C:\\Users\\Davide\\.nuget\\packages\\sfml.graphics\\2.5.0\\sfml.graphics.2.5.0.nupkg.sha512",
     "C:\\Users\\Davide\\.nuget\\packages\\sfml.net\\2.5.0\\sfml.net.2.5.0.nupkg.sha512",
     "C:\\Users\\Davide\\.nuget\\packages\\sfml.system\\2.5.0\\sfml.system.2.5.0.nupkg.sha512",
     "C:\\Users\\Davide\\.nuget\\packages\\sfml.window\\2.5.0\\sfml.window.2.5.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
+    "C:\\Users\\Davide\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512",
     "C:\\Users\\Davide\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.21\\microsoft.netcore.app.host.win-x64.3.1.21.nupkg.sha512"
   ],
   "logs": []

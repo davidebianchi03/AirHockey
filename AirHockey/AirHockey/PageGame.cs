@@ -1,6 +1,7 @@
 ﻿using SFML.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Media;
 using System.Text;
 using System.Threading;
 using window_utilities;
@@ -22,6 +23,7 @@ namespace AirHockey
         private HandleUpdate handleUpdate;//aggiornamento della posizione della manopola dell'avversario
         private BallUpdate ballUpdate;//aggiornamento della posizione della pallina
         private bool GoalSuffered = false;
+        private bool GoalScored = false;
         public PageGame(RenderWindow parentWindow)
         {
             SharedSettings settings = SharedSettings.GetInstance();
@@ -70,6 +72,27 @@ namespace AirHockey
             }
             //Richiamo l'evento che mi indica quando subisco un goal
             Ball.GoalSuffered += GoalSufferedCallback;
+            settings.sendAndReceive.MessageReceived += MessageReceivedCallback;
+        }
+
+        /*   Messaggio ricevuto (mi serve per poter rilevare quando faccio goal)   */
+        private void MessageReceivedCallback(object sender, MessageReceivedArgs e)
+        {
+            SharedSettings settings = SharedSettings.GetInstance();
+            if (e.message.Command == "g" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            {
+                Thread t = new Thread(delegate ()
+                {
+                    settings.Connection.myPoints++;
+                    GoalScored = true;
+                    //Riproduco il suono del Goal fatto
+                    SoundPlayer soundPlayer = new SoundPlayer(settings.resourcesPath + "GoalScoredSound.wav");
+                    soundPlayer.Play();
+                    Thread.Sleep(2000);
+                    GoalScored = false;
+                });
+                t.Start();
+            }
         }
 
         /*  Metodo che viene richiamato dall'evento del goal subito  */
@@ -105,6 +128,9 @@ namespace AirHockey
                 GoalSuffered = true;
                 //Incremento il valore dei punti dell'avversario
                 settings.Connection.OpponentsPoints++;
+                //Riproduco il suono del Goal subito
+                SoundPlayer soundPlayer = new SoundPlayer(settings.resourcesPath + "GoalSufferedSound.wav");
+                soundPlayer.Play();
                 Thread.Sleep(2000);
                 GoalSuffered = false;
             });
@@ -164,10 +190,14 @@ namespace AirHockey
             {
                 DrawGoalSuffered();
             }
+            if (GoalScored)
+            {
+                DrawGoalScored();
+            }
         }
 
-        /*   Metodo per disegnare la schermata quando viene subito un goal   */
-        void DrawGoalSuffered()
+        /*   Metodo per disegnare la notifica quando viene subito un goal   */
+        public void DrawGoalSuffered()
         {
             SharedSettings settings = SharedSettings.GetInstance();
             //Disegno il rettangolo che contiene tutto (250 * 500)
@@ -182,6 +212,28 @@ namespace AirHockey
             parentWindow.Draw(container);
             //Disegno il testo che indica che ho subito un goal
             Text text = new Text("Hai subito\nGoal", settings.font);
+            text.CharacterSize = 18;
+            text.FillColor = Color.White;
+            text.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 10, playground.Position.Y + 60);
+            parentWindow.Draw(text);
+        }
+
+        /*   Metodo per disegnare la notifica quando viene fatto un goal    */
+        public void DrawGoalScored()
+        {
+            SharedSettings settings = SharedSettings.GetInstance();
+            //Disegno il rettangolo che contiene tutto (250 * 500)
+            float windowCenterX = parentWindow.Size.X / 2;
+            float windowCenterY = parentWindow.Size.Y / 2;
+            RectangleShape container = new RectangleShape();
+            container.Size = new SFML.System.Vector2f(150, 80);
+            container.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 5, playground.Position.Y + 50);
+            container.FillColor = Color.Black;
+            container.OutlineColor = Color.Green;
+            container.OutlineThickness = 2;
+            parentWindow.Draw(container);
+            //Disegno il testo che indica che ho subito un goal
+            Text text = new Text("Hai fatto\nGoal!", settings.font);
             text.CharacterSize = 18;
             text.FillColor = Color.White;
             text.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 10, playground.Position.Y + 60);
