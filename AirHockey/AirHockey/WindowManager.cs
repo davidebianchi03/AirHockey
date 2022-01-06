@@ -70,6 +70,11 @@ namespace AirHockey
 
                     case EstabishConnectionPage:
                         //visualizzazione della schermata per inviare una richiesta di connessione
+                        if(setUsernamePage != null)
+                        {
+                            setUsernamePage.button.Enable = false;
+                            setUsernamePage.textInput.Enable = false;
+                        }
                         if(establishConnection == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
@@ -99,7 +104,17 @@ namespace AirHockey
                         acceptConnection.Draw();
                         break;
                     case GamePage:
-                        if(pageGame == null)
+                        if(acceptConnection != null)
+                        {
+                            acceptConnection.btnYes.Enable = false;
+                            acceptConnection.btnNo.Enable = false;
+                        }
+                        if (establishConnection != null)
+                        {
+                            //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
+                            establishConnection.btnSendRequest.Position = new SFML.System.Vector2f(0, 0);//sposto il pulsante di invio richiesta perchè sa solo lui perchè si bugga
+                        }
+                        if (pageGame == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina del gioco
                             settings.sendAndReceive.ClearEvents();

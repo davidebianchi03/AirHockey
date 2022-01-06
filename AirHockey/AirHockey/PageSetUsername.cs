@@ -12,8 +12,8 @@ namespace AirHockey
     {
         public string Username { get; set; } = "";
         private RenderWindow window;
-        private UITextInput textInput;
-        private UIButton button;
+        public UITextInput textInput;
+        public UIButton button;
         private const int borderWidth = 600;
         private const int borderHeight = 600;
         public PageSetUsername(RenderWindow window)

@@ -11,8 +11,8 @@ namespace AirHockey
     class PageAcceptConnection
     {
         private RenderWindow window = null;//finestra su cui disegnare tutto
-        private UIButton btnYes = null;//pulsante per accettare la richiesta
-        private UIButton btnNo = null;//pulsante per rifiutare la richiesta
+        public UIButton btnYes = null;//pulsante per accettare la richiesta
+        public UIButton btnNo = null;//pulsante per rifiutare la richiesta
         private Text txtOpponent = null;//oggetto text in cui viene inserito l'ip dell'altro host e lo username dell'avversario
         private const int borderWidth = 600;
         private const int borderHeight = 600;

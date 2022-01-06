@@ -105,7 +105,10 @@ namespace AirHockey
                 if(distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500)//in ogni millisecondo ci sono 10000 ticks
                 {
                     Ball.Angle = CalculateBallRebounceAngle();
-                    Ball.Speed += settings.SpeedIncrease;
+                    if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
+                    {
+                        Ball.Speed += settings.SpeedIncrease;
+                    }
                     lastContactTicks = DateTime.Now.Ticks;
                     //invio la nuova posizione e il nuovo angolo della pallina
                     SendAndReceive sendAndReceive = settings.sendAndReceive;
