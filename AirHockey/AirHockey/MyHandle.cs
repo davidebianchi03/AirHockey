@@ -84,57 +84,60 @@ namespace AirHockey
             long lastContactTicks = DateTime.Now.Ticks;
             SharedSettings settings = SharedSettings.GetInstance();
 
-            while (parentWindow.IsOpen)
+            while (parentWindow.IsOpen && settings.Connection != null)
             {
-                float globalX = Mouse.GetPosition(parentWindow).X;
-                float globalY = Mouse.GetPosition(parentWindow).Y;
-                GlobalPosition = new SFML.System.Vector2f(globalX, globalY);
-                //Controllo se il cursore si trova all'interno del campo da gioco nella mia metà campo
-                if (globalX - Radius > PlaygroundPosition.X
-                    && globalX + Radius < PlaygroundPosition.X + PlaygroundSize.X &&
-                    globalY - Radius > PlaygroundPosition.Y + (PlaygroundSize.Y / 2) &&
-                    globalY + Radius < PlaygroundSize.Y + PlaygroundPosition.Y)
+                try
                 {
-                    //calcolo la posizione locale (nel campo del cursore)
-                    Position = new SFML.System.Vector2f(globalX - PlaygroundPosition.X, globalY - PlaygroundPosition.Y);//posizione globale della manopola sulla finestra
-                }
-
-                /* Calcolo la pallina se è andata a scontrarsi con la manopola */
-                double distance = Math.Sqrt(Math.Pow((Position.X - Ball.Position.X),2) + Math.Pow((Position.Y - Ball.Position.Y), 2));
-                //Console.WriteLine(DateTime.Now.Ticks);
-                if(distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500)//in ogni millisecondo ci sono 10000 ticks
-                {
-                    Ball.Angle = CalculateBallRebounceAngle();
-                    if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
+                    float globalX = Mouse.GetPosition(parentWindow).X;
+                    float globalY = Mouse.GetPosition(parentWindow).Y;
+                    GlobalPosition = new SFML.System.Vector2f(globalX, globalY);
+                    //Controllo se il cursore si trova all'interno del campo da gioco nella mia metà campo
+                    if (globalX - Radius > PlaygroundPosition.X
+                        && globalX + Radius < PlaygroundPosition.X + PlaygroundSize.X &&
+                        globalY - Radius > PlaygroundPosition.Y + (PlaygroundSize.Y / 2) &&
+                        globalY + Radius < PlaygroundSize.Y + PlaygroundPosition.Y)
                     {
-                        Ball.Speed += settings.SpeedIncrease;
+                        //calcolo la posizione locale (nel campo del cursore)
+                        Position = new SFML.System.Vector2f(globalX - PlaygroundPosition.X, globalY - PlaygroundPosition.Y);//posizione globale della manopola sulla finestra
                     }
-                    lastContactTicks = DateTime.Now.Ticks;
-                    //invio la nuova posizione e il nuovo angolo della pallina
-                    SendAndReceive sendAndReceive = settings.sendAndReceive;
-                    Message updatePositionMsg = new Message();
-                    updatePositionMsg.Command = "p";
-                    string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
-                    updatePositionMsg.Body = CommandParameters;
-                    updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
-                    sendAndReceive.SendMessage(updatePositionMsg);
-                }
 
-                /*   Controllo se è cambiata la posizione del cursore e in caso invio la nuova posizione   */
-                if (LastPosition.X != Position.X || LastPosition.Y != Position.Y)
-                {
-                    LastPosition = Position;
-                    //invio il messaggio con la nuova posizione
-                    SendAndReceive sendAndReceive = settings.sendAndReceive;
-                    Message newHandlePosMessage = new Message();
-                    newHandlePosMessage.Command = "m";
-                    string body = Position.X.ToString() + ";" + Position.Y.ToString();
-                    newHandlePosMessage.Body = body;
-                    newHandlePosMessage.destinationIP = settings.Connection.OpponentIP;
-                    sendAndReceive.SendMessage(newHandlePosMessage);
-                }
+                    /* Calcolo la pallina se è andata a scontrarsi con la manopola */
+                    double distance = Math.Sqrt(Math.Pow((Position.X - Ball.Position.X), 2) + Math.Pow((Position.Y - Ball.Position.Y), 2));
+                    //Console.WriteLine(DateTime.Now.Ticks);
+                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500)//in ogni millisecondo ci sono 10000 ticks
+                    {
+                        Ball.Angle = CalculateBallRebounceAngle();
+                        if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
+                        {
+                            Ball.Speed += settings.SpeedIncrease;
+                        }
+                        lastContactTicks = DateTime.Now.Ticks;
+                        //invio la nuova posizione e il nuovo angolo della pallina
+                        SendAndReceive sendAndReceive = settings.sendAndReceive;
+                        Message updatePositionMsg = new Message();
+                        updatePositionMsg.Command = "p";
+                        string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
+                        updatePositionMsg.Body = CommandParameters;
+                        updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
+                        sendAndReceive.SendMessage(updatePositionMsg);
+                    }
 
-                Thread.Sleep(updateTime);
+                    /*   Controllo se è cambiata la posizione del cursore e in caso invio la nuova posizione   */
+                    if (LastPosition.X != Position.X || LastPosition.Y != Position.Y)
+                    {
+                        LastPosition = Position;
+                        //invio il messaggio con la nuova posizione
+                        SendAndReceive sendAndReceive = settings.sendAndReceive;
+                        Message newHandlePosMessage = new Message();
+                        newHandlePosMessage.Command = "m";
+                        string body = Position.X.ToString() + ";" + Position.Y.ToString();
+                        newHandlePosMessage.Body = body;
+                        newHandlePosMessage.destinationIP = settings.Connection.OpponentIP;
+                        sendAndReceive.SendMessage(newHandlePosMessage);
+                    }
+
+                    Thread.Sleep(updateTime);
+                }catch (Exception ex) { }
             }
         }
 

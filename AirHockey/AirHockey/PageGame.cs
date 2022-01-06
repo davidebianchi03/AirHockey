@@ -1,4 +1,6 @@
-﻿using SFML.Graphics;
+﻿using AirHockey.window_utilities;
+using SFML.Graphics;
+using SFML.Window;
 using System;
 using System.Collections.Generic;
 using System.Media;
@@ -93,6 +95,17 @@ namespace AirHockey
                 });
                 t.Start();
             }
+            else if(e.message.Command == "e" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            {
+                //concludo la connessione
+                settings.Connection = null;
+                //visualizzo un messagggio
+                VideoMode msgMode = new VideoMode(400, 150);
+                UIMessageBox messageBox = new UIMessageBox(msgMode, "Connessione interrotta", "L'altro host ha interrotto la connessione" ,parentWindow, settings.font);
+                messageBox.Show();
+                //visualizzo la pagina per stabilire la connessione
+                settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
+            }
         }
 
         /*  Metodo che viene richiamato dall'evento del goal subito  */
@@ -100,100 +113,110 @@ namespace AirHockey
         {
             Thread t = new Thread(delegate ()
             {
+                
                 SharedSettings settings = SharedSettings.GetInstance();
-                /*   Creo il pulsante per chuidere la finestra   */
-                float windowCenterX = parentWindow.Size.X / 2;
-                float windowCenterY = parentWindow.Size.Y / 2;
-                /*   Invio il messaggio di goal subito   */
-                SendAndReceive sendAndReceive = settings.sendAndReceive;
-                Message GoalSufferedMsg = new Message();
-                GoalSufferedMsg.Command = "g";
-                GoalSufferedMsg.Body = "";
-                GoalSufferedMsg.destinationIP = settings.Connection.OpponentIP;
-                sendAndReceive.SendMessage(GoalSufferedMsg);
-                /*   Palla in centro e si riparte   */
-                //Posiziono la pallina in centro
-                Ball.Speed = 300;
-                Ball.Position = new SFML.System.Vector2f(playgroundSize.X / 2, playgroundSize.Y / 2);
-                Random Rand = new Random();
-                Ball.Angle = Rand.NextDouble() * (Math.PI * 2);
-                //invio la nuova posizione e il nuovo angolo della pallina
-                Message updatePositionMsg = new Message();
-                updatePositionMsg.Command = "p";
-                string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
-                updatePositionMsg.Body = CommandParameters;
-                updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
-                sendAndReceive.SendMessage(updatePositionMsg);
-                /*   Cambio il valore alla variabile che indica se è stato subito un goal   */
-                GoalSuffered = true;
-                //Incremento il valore dei punti dell'avversario
-                settings.Connection.OpponentsPoints++;
-                //Riproduco il suono del Goal subito
-                SoundPlayer soundPlayer = new SoundPlayer(settings.resourcesPath + "GoalSufferedSound.wav");
-                soundPlayer.Play();
-                Thread.Sleep(2000);
-                GoalSuffered = false;
+                if (settings.Connection != null)
+                {
+                    /*   Creo il pulsante per chuidere la finestra   */
+                    float windowCenterX = parentWindow.Size.X / 2;
+                    float windowCenterY = parentWindow.Size.Y / 2;
+                    /*   Invio il messaggio di goal subito   */
+                    SendAndReceive sendAndReceive = settings.sendAndReceive;
+                    Message GoalSufferedMsg = new Message();
+                    GoalSufferedMsg.Command = "g";
+                    GoalSufferedMsg.Body = "";
+                    GoalSufferedMsg.destinationIP = settings.Connection.OpponentIP;
+                    sendAndReceive.SendMessage(GoalSufferedMsg);
+                    /*   Palla in centro e si riparte   */
+                    //Posiziono la pallina in centro
+                    Ball.Speed = 300;
+                    Ball.Position = new SFML.System.Vector2f(playgroundSize.X / 2, playgroundSize.Y / 2);
+                    Random Rand = new Random();
+                    Ball.Angle = Rand.NextDouble() * (Math.PI * 2);
+                    //invio la nuova posizione e il nuovo angolo della pallina
+                    Message updatePositionMsg = new Message();
+                    updatePositionMsg.Command = "p";
+                    string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
+                    updatePositionMsg.Body = CommandParameters;
+                    updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
+                    sendAndReceive.SendMessage(updatePositionMsg);
+                    /*   Cambio il valore alla variabile che indica se è stato subito un goal   */
+                    GoalSuffered = true;
+                    //Incremento il valore dei punti dell'avversario
+                    settings.Connection.OpponentsPoints++;
+                    //Riproduco il suono del Goal subito
+                    SoundPlayer soundPlayer = new SoundPlayer(settings.resourcesPath + "GoalSufferedSound.wav");
+                    soundPlayer.Play();
+                    Thread.Sleep(2000);
+                    GoalSuffered = false;
+                }
             });
             t.Start();
         }
 
         public void Draw()
         {
-            SharedSettings settings = SharedSettings.GetInstance();
-            /* DISEGNO IL CAMPO */
-            //disegno il campo (rettangolo 500 * 800)
-            float windowCenterX = parentWindow.Size.X / 2;
-            float windowCenterY = parentWindow.Size.Y / 2;
-            playground.Position = new SFML.System.Vector2f(windowCenterX - (playground.Size.X / 2), 50);
-            parentWindow.Draw(playground);
-            //disegno la mia porta
-            myGoal.Position = new SFML.System.Vector2f(windowCenterX - (myGoal.Size.X / 2), playground.Position.Y + playground.Size.Y);
-            parentWindow.Draw(myGoal);
-            //disegno la porta dell'avversario
-            opponentGoal.Position = new SFML.System.Vector2f(windowCenterX - (opponentGoal.Size.X / 2), playground.Position.Y - opponentGoal.Size.Y);
-            parentWindow.Draw(opponentGoal);
-            //disegno il cerchio in mezzo al campo
-            CircleShape circle = new CircleShape();
-            circle.Radius = 75;
-            circle.FillColor = Color.Black;
-            circle.OutlineColor = Color.White;
-            circle.OutlineThickness = 1;
-            circle.Position = new SFML.System.Vector2f(windowCenterX - circle.Radius, playground.Position.Y + (playground.Size.Y / 2) - circle.Radius);
-            parentWindow.Draw(circle);
-            //disegno la linea di metà campo
-            RectangleShape halfWayLine = new RectangleShape();
-            halfWayLine.Size = new SFML.System.Vector2f(playgroundSize.X, 2);
-            halfWayLine.FillColor = Color.White;
-            halfWayLine.Position = new SFML.System.Vector2f(playground.Position.X, playground.Position.Y + (playground.Size.Y / 2) - 1);
-            parentWindow.Draw(halfWayLine);
-            //disegno il numero che indica i miei punti
-            Text myPointTxt = new Text(settings.Connection.myPoints.ToString(), settings.font);
-            myPointTxt.Position = new SFML.System.Vector2f(playground.Position.X + playground.Size.X + 10, playground.Position.Y + (playground.Size.Y / 2) + 10);
+            try
+            {
+                SharedSettings settings = SharedSettings.GetInstance();
+                /* DISEGNO IL CAMPO */
+                //disegno il campo (rettangolo 500 * 800)
+                float windowCenterX = parentWindow.Size.X / 2;
+                float windowCenterY = parentWindow.Size.Y / 2;
+                playground.Position = new SFML.System.Vector2f(windowCenterX - (playground.Size.X / 2), 50);
+                parentWindow.Draw(playground);
+                //disegno la mia porta
+                myGoal.Position = new SFML.System.Vector2f(windowCenterX - (myGoal.Size.X / 2), playground.Position.Y + playground.Size.Y);
+                parentWindow.Draw(myGoal);
+                //disegno la porta dell'avversario
+                opponentGoal.Position = new SFML.System.Vector2f(windowCenterX - (opponentGoal.Size.X / 2), playground.Position.Y - opponentGoal.Size.Y);
+                parentWindow.Draw(opponentGoal);
+                //disegno il cerchio in mezzo al campo
+                CircleShape circle = new CircleShape();
+                circle.Radius = 75;
+                circle.FillColor = Color.Black;
+                circle.OutlineColor = Color.White;
+                circle.OutlineThickness = 1;
+                circle.Position = new SFML.System.Vector2f(windowCenterX - circle.Radius, playground.Position.Y + (playground.Size.Y / 2) - circle.Radius);
+                parentWindow.Draw(circle);
+                //disegno la linea di metà campo
+                RectangleShape halfWayLine = new RectangleShape();
+                halfWayLine.Size = new SFML.System.Vector2f(playgroundSize.X, 2);
+                halfWayLine.FillColor = Color.White;
+                halfWayLine.Position = new SFML.System.Vector2f(playground.Position.X, playground.Position.Y + (playground.Size.Y / 2) - 1);
+                parentWindow.Draw(halfWayLine);
+                //disegno il numero che indica i miei punti
+                if (settings.Connection != null)
+                {
+                    Text myPointTxt = new Text(settings.Connection.myPoints.ToString(), settings.font);
+                    myPointTxt.Position = new SFML.System.Vector2f(playground.Position.X + playground.Size.X + 10, playground.Position.Y + (playground.Size.Y / 2) + 10);
 
-            myPointTxt.CharacterSize = 30;
-            parentWindow.Draw(myPointTxt);
-            //disegno il numero che indica i punti dell'avversario
-            Text opponentPointTxt = new Text(settings.Connection.OpponentsPoints.ToString(), settings.font);
-            opponentPointTxt.Position = new SFML.System.Vector2f(playground.Position.X + playground.Size.X + 10, playground.Position.Y + (playground.Size.Y / 2) - 50);
-            opponentPointTxt.CharacterSize = 30;
-            parentWindow.Draw(opponentPointTxt);
-            //disegno la pallina
-            Ball.playgroundPosition = playground.Position;
-            Ball.DrawBall(playground.Position);
-            //disegno la mia manopola
-            settings.MyHandle.PlaygroundPosition = playground.Position;
-            settings.MyHandle.Draw();
-            //disegno la manopola dell'avversario
-            settings.opponentHandle.PlaygroundPosition = playground.Position;
-            settings.opponentHandle.Draw();
-            if (GoalSuffered)
-            {
-                DrawGoalSuffered();
-            }
-            if (GoalScored)
-            {
-                DrawGoalScored();
-            }
+                    myPointTxt.CharacterSize = 30;
+                    parentWindow.Draw(myPointTxt);
+                    //disegno il numero che indica i punti dell'avversario
+                    Text opponentPointTxt = new Text(settings.Connection.OpponentsPoints.ToString(), settings.font);
+                    opponentPointTxt.Position = new SFML.System.Vector2f(playground.Position.X + playground.Size.X + 10, playground.Position.Y + (playground.Size.Y / 2) - 50);
+                    opponentPointTxt.CharacterSize = 30;
+                    parentWindow.Draw(opponentPointTxt);
+                }
+                //disegno la pallina
+                Ball.playgroundPosition = playground.Position;
+                Ball.DrawBall(playground.Position);
+                //disegno la mia manopola
+                settings.MyHandle.PlaygroundPosition = playground.Position;
+                settings.MyHandle.Draw();
+                //disegno la manopola dell'avversario
+                settings.opponentHandle.PlaygroundPosition = playground.Position;
+                settings.opponentHandle.Draw();
+                if (GoalSuffered)
+                {
+                    DrawGoalSuffered();
+                }
+                if (GoalScored)
+                {
+                    DrawGoalScored();
+                }
+            }catch (Exception ex) { }
         }
 
         /*   Metodo per disegnare la notifica quando viene subito un goal   */
@@ -216,6 +239,7 @@ namespace AirHockey
             text.FillColor = Color.White;
             text.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 10, playground.Position.Y + 60);
             parentWindow.Draw(text);
+            CheckPointsAndChangePage();
         }
 
         /*   Metodo per disegnare la notifica quando viene fatto un goal    */
@@ -238,6 +262,18 @@ namespace AirHockey
             text.FillColor = Color.White;
             text.Position = new SFML.System.Vector2f(playgroundSize.X + playground.Position.X + 10, playground.Position.Y + 60);
             parentWindow.Draw(text);
+            CheckPointsAndChangePage();
+        }
+
+        /* Metodo che controlla se si è raggiunto il massimo dei punti ed eventualmente cambia pagina */
+        public void CheckPointsAndChangePage()
+        {
+            SharedSettings settings = SharedSettings.GetInstance();
+            int maxPoints = 2;
+            if(settings.Connection.myPoints >= maxPoints || settings.Connection.OpponentsPoints >= maxPoints)
+            {
+                settings.windowManager.PageDisplayed = WindowManager.GameFinishPage;
+            }
         }
     }
 }

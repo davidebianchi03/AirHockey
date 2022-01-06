@@ -15,7 +15,8 @@ namespace AirHockey
         public const int UsernameInputPage = 0;//ID della schermata di inserimento dello Username
         public const int EstabishConnectionPage = 1;//ID della schermata per inviare una richiesta di connessione verso un altro host
         public const int AcceptConnectionPage = 2;//ID della schermata per accettare la richiesta di connessione proveniente da un altro host
-        public const int GamePage = 3; 
+        public const int GamePage = 3;
+        public const int GameFinishPage = 4;
 
         public WindowManager()
         {
@@ -46,6 +47,8 @@ namespace AirHockey
             PageAcceptConnection acceptConnection = null;
             //creo l'oggetto che serve a disegnare e gestire la pagina per giocare
             PageGame pageGame = null;
+            //creo l'oggetto che serve a disegnare e gestire la pagina successiva al gioco
+            PageFinish pageFinish = null;
 
             while (window.IsOpen)//ciclo principale della finestra
             {
@@ -65,6 +68,7 @@ namespace AirHockey
                         establishConnection = null;
                         acceptConnection = null;
                         pageGame = null;
+                        pageFinish = null;
                         setUsernamePage.Draw();
                         break;
 
@@ -75,15 +79,21 @@ namespace AirHockey
                             setUsernamePage.button.Enable = false;
                             setUsernamePage.textInput.Enable = false;
                         }
+                        if(pageFinish != null)
+                        {
+                            pageFinish.btnRematch.Enable = false;
+                            pageFinish.btnEndConnection.Enable = false;
+                        }
                         if(establishConnection == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
                             settings.sendAndReceive.ClearEvents();
                             establishConnection = new PageEstablishConnection(window);
-                        }                        
+                        }                     
                         setUsernamePage = null;
                         acceptConnection = null;
                         pageGame = null;
+                        pageFinish = null;
                         establishConnection.Draw();
                         break;
                     case AcceptConnectionPage:
@@ -100,7 +110,8 @@ namespace AirHockey
                         }
                         establishConnection = null;
                         setUsernamePage = null;
-                        pageGame = null;                       
+                        pageGame = null;
+                        pageFinish = null;
                         acceptConnection.Draw();
                         break;
                     case GamePage:
@@ -123,7 +134,21 @@ namespace AirHockey
                         establishConnection = null;
                         setUsernamePage = null;
                         acceptConnection = null;
+                        pageFinish = null;
                         pageGame.Draw();
+                        break;
+                    case GameFinishPage:
+                        if(pageFinish == null)
+                        {
+                            //inizializzo l'oggetto che serve a disegnare e gestire la pagina successiva al gioco
+                            pageFinish = new PageFinish(window);
+                        }
+
+                        establishConnection = null;
+                        setUsernamePage = null;
+                        acceptConnection = null;
+                        pageGame = null;
+                        pageFinish.Draw();
                         break;
                 }
 
