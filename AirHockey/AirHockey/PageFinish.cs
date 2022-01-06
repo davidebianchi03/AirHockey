@@ -52,12 +52,12 @@ namespace AirHockey
         private void MessageReceivedCallback(object sender, MessageReceivedArgs e)
         {
             SharedSettings settings = SharedSettings.GetInstance();
-            if (e.message.Command == "e" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            if (settings.Connection != null && e.message.Command == "e" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
             {
                 //concludo la connessione
                 settings.Connection = null;
                 //visualizzo un messagggio
-                VideoMode msgMode = new VideoMode(400, 150);
+                VideoMode msgMode = new VideoMode(500, 150);
                 UIMessageBox messageBox = new UIMessageBox(msgMode, "Connessione interrotta", "L'altro host ha interrotto la connessione", parentWindow, settings.font);
                 messageBox.Show();
                 //visualizzo la pagina per stabilire la connessione

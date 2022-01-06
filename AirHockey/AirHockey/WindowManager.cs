@@ -141,6 +141,7 @@ namespace AirHockey
                         if(pageFinish == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina successiva al gioco
+                            settings.sendAndReceive.ClearEvents();
                             pageFinish = new PageFinish(window);
                         }
 
