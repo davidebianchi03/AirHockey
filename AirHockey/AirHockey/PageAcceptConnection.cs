@@ -111,6 +111,7 @@ namespace AirHockey
                 //cancello i dati temporanei
                 settings.hostRequestorUsername = "";
                 settings.hostRequestorIP = "";
+                settings.Connection.IEstablish = false;
                 //Visualizzo la schermata di gioco
                 settings.windowManager.PageDisplayed = WindowManager.GamePage;
             }

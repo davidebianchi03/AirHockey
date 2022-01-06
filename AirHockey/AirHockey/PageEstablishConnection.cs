@@ -124,6 +124,7 @@ namespace AirHockey
                     settings.Connection = new Connection();
                     settings.Connection.OpponentUsername = username;
                     settings.Connection.OpponentIP = IPAddress.Parse(ipAddress);
+                    settings.Connection.IEstablish = true;
                 }
                 else
                 {

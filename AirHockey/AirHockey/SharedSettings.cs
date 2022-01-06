@@ -50,6 +50,7 @@ namespace AirHockey
 
         public OpponentHandle opponentHandle { get; set; } = null;
 
+        public int SpeedIncrease = 20;//Valore di cui viene incrementata la velocià ad ogni colpo
         private SharedSettings()
         {
             resourcesPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString() + "\\resources\\";

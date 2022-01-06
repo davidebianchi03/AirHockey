@@ -20,6 +20,7 @@ namespace AirHockey
         public int opponentPoints { get; set; } = 0;//i punti dell'avversario
         public Ball Ball { get; set; }
         private HandleUpdate handleUpdate;//aggiornamento della posizione della manopola dell'avversario
+        private BallUpdate ballUpdate;//aggiornamento della posizione della pallina
 
         public PageGame(RenderWindow parentWindow)
         {
@@ -50,6 +51,23 @@ namespace AirHockey
             settings.opponentHandle = new OpponentHandle(parentWindow, playgroundSize);
             //creo l'oggetto che aggiorna la posizione della manopola
             handleUpdate = new HandleUpdate(settings.opponentHandle);
+            //creo l'oggetto che aggiorna la posizione della pallina
+            ballUpdate = new BallUpdate(Ball);
+            /*   Se sono stato io a richiedere la connessione invio la posizione iniziale della pallina   */
+            
+            if (settings.Connection.IEstablish)
+            {
+                //genero l'angolo random della pallina
+                Random Rand = new Random();
+                Ball.Angle = Rand.NextDouble() * (Math.PI * 2);
+                SendAndReceive sendAndReceive = settings.sendAndReceive;
+                Message updatePositionMsg = new Message();
+                updatePositionMsg.Command = "p";
+                string CommandParameters = Ball.Angle.ToString() + ";" + Ball.Speed.ToString() + ";" + Ball.Position.X.ToString() + ";" + Ball.Position.Y.ToString();
+                updatePositionMsg.Body = CommandParameters;
+                updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
+                sendAndReceive.SendMessage(updatePositionMsg);
+            }
         }
 
         public void Draw()
