@@ -128,19 +128,89 @@ namespace AirHockey
 
         public double CalculateBallRebounceAngle()
         {
-            SharedSettings settings = SharedSettings.GetInstance();
-            /*   Calcolo in che quadrante rispetto alla manopola si trova il disco   */
-            double ballX = Ball.Position.X;
-            double ballY = Ball.Position.Y;
-            double handleX = Position.X;
-            double handleY = Position.Y;
-            
-            double tangent = Math.Atan2(ballY - handleY, ballX - handleX);
-            double newAngle = Math.PI / 2 + tangent;
-           
-            if(newAngle < 0)
+            double newAngle = 0;
+            //Scorro in avanti la posizione della pallina fino a trovare il punto che passa dalla circonferenza
+            /*   Posizione della pallina   */
+            float BallX = Ball.Position.X;
+            float BallY = Ball.Position.Y;
+            /*   Posizione della manopola   */
+            float HandleX = Position.X;
+            float HandleY = Position.Y;
+            //Angolo con cui si muove la pallina
+            double BallAngle = Ball.Angle;
+
+            double InteresectionX = BallX;//coordinata del punto di intersezione sull'asse delle X
+            double InteresectionY = BallY;//coordinata del punto di intersezione sull'asse delle Y
+
+            double distanceToMove = (Ball.Speed * 33) / 1000;
+            double distanceX = distanceToMove * Math.Cos(BallAngle);//spostamento della pallina sull'asse delle X
+            double distanceY = distanceToMove * Math.Sin(BallAngle);//spostamento della pallina sull'asse delle Y
+            double lastBallX = 0;
+            double lastBallY = 0;
+
+            if (BallX < HandleX)
             {
-                newAngle = ((Math.PI * 2) - (Math.PI / 2)) - newAngle;
+                //se la palla è a sinistra della manopola
+                lastBallX = BallX - distanceX;
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X - 10, Ball.Position.Y);
+            }
+            else
+            {
+                //se la palla è a destra della manopola
+                lastBallX = BallX + distanceX;
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X + 10, Ball.Position.Y);
+            }
+
+            if (BallY < HandleY)
+            {
+                //se la palla è sopra alla manopola
+                lastBallY = BallY - distanceY;
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y - 10);
+            }
+            else
+            {
+                //se la palla è sotto alla manopola
+                lastBallY = BallY + distanceY;
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y + 10);
+            }
+
+            //trovo il punto di contatto della pallina con la manopola (punto di intersezione della linea che percorre la pallina e il cerchio della manopola)
+            double dx = lastBallX - BallX;
+            double dy = lastBallY - BallY;
+
+            double A = dx * dx + dy * dy;
+            double B = 2 * (dx * (BallX - HandleX) + dy * (BallY - BallY));
+            double C = (BallX - HandleX) * (BallX - HandleX) +
+                (BallY - BallY) * (BallY - BallY) -
+                Radius * Radius;
+            double delta = B * B - 4 * A * C;
+
+            if (delta >= 0)
+            {
+                float t1 = (float)((-B + Math.Sqrt(delta)) / (2 * A));
+                SFML.System.Vector2f p1 = new SFML.System.Vector2f((float)(BallX + t1 * dx), (float)(BallY + t1 * dy));
+                float t2 = (float)((-B - Math.Sqrt(delta)) / (2 * A));
+                SFML.System.Vector2f p2 = new SFML.System.Vector2f((float)(BallX + t2 * dx), (float)(BallY + t2 * dy));
+
+                double d1 = Math.Sqrt(Math.Pow(p1.X - BallX, 2) + Math.Pow(p1.Y - BallY, 2));
+                double d2 = Math.Sqrt(Math.Pow(BallX - p2.X, 2) + Math.Pow(BallY - p2.Y, 2));
+
+                if (d1 < d2)
+                {
+                    InteresectionX = p1.X;
+                    InteresectionY = p1.Y;
+                }
+                else
+                {
+                    InteresectionX = p2.X;
+                    InteresectionY = p2.Y;
+                }
+                //trovo l'angolo rispetto all'asse delle x della retta tangente al punt di contatto
+                double tangentAngle = Math.Atan2(InteresectionY, InteresectionX);//angolo rispetto all'asse delle x della tangente al punto di contatto
+                //trovo l'angolo riflesso rispetto alla tangente
+                double gamma = BallAngle - tangentAngle;
+                newAngle = gamma - tangentAngle;
+                //Console.WriteLine(newAngle);
             }
 
             return newAngle;
