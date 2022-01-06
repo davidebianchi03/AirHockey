@@ -31,7 +31,7 @@ namespace AirHockey.window_utilities
             this.VideoMode = mode;
             this.Title = title;
             this.Content = content;
-            DisplayThread = new Thread(ShowThreadMethod);
+            
         }
 
         private void ButtonPressedCallback(object sender, EventArgs e)
@@ -41,6 +41,7 @@ namespace AirHockey.window_utilities
 
         public void Show()
         {
+            DisplayThread = new Thread(ShowThreadMethod);
             DisplayThread.Start();
             DisplayThread.Join();
         }

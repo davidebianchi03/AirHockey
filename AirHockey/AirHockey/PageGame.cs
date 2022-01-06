@@ -95,7 +95,7 @@ namespace AirHockey
                 });
                 t.Start();
             }
-            else if(e.message.Command == "e" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            else if(settings.Connection == null || (e.message.Command == "e" && e.message.sourceIP.Equals(settings.Connection.OpponentIP)))
             {
                 //concludo la connessione
                 settings.Connection = null;

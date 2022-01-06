@@ -51,6 +51,9 @@ namespace AirHockey
             RematchResponseReceived = false;
         }
 
+        private bool ShowMessage = true;
+        UIMessageBox messageWait = null;
+
         /* Metodo richiamato quando viene ricevuto un messaggio */
         private void MessageReceivedCallback(object sender, MessageReceivedArgs e)
         {
@@ -65,13 +68,17 @@ namespace AirHockey
                 messageBox.Show();
                 //visualizzo la pagina per stabilire la connessione
                 settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
-                if(showMessageThread != null)
+                if (showMessageThread != null)
                 {
-                    showMessageThread.Abort();
+                    ShowMessage = false;//--------------------
                     showMessageThread = null;
+                    if (messageWait != null)
+                    {
+                        messageWait.IsOpen = false;
+                    }
                 }
             }
-            else if(settings.Connection != null && e.message.Command == "r" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
+            else if (settings.Connection != null && e.message.Command == "r" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
             {
                 //comando rematch
                 VideoMode msgMode = new VideoMode(500, 150);
@@ -80,7 +87,7 @@ namespace AirHockey
                 Message responseMsg = new Message();
                 responseMsg.Body = "";
                 responseMsg.destinationIP = settings.Connection.OpponentIP;
-                if(testUI.getResponseCode() == UIAcceptDiscardBox.Ok)
+                if (testUI.getResponseCode() == UIAcceptDiscardBox.Ok)
                 {
                     responseMsg.Command = "y";
                     //se la risposta è positiva vado alla pagina del gioco
@@ -107,7 +114,7 @@ namespace AirHockey
         private void ButtonCloseConnPressedCallback(object sender, EventArgs e)
         {
             SharedSettings settings = SharedSettings.GetInstance();
-            if(settings.Connection != null)
+            if (settings.Connection != null)
             {
                 //invio il messaggio di chiusura connessione
                 Message closeConnMsg = new Message();
@@ -116,7 +123,7 @@ namespace AirHockey
                 closeConnMsg.destinationIP = settings.Connection.OpponentIP;
                 settings.sendAndReceive.SendMessage(closeConnMsg);
             }
-            
+
             //cambio pagina
             settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
         }
@@ -125,7 +132,7 @@ namespace AirHockey
         private void ButtonRematchPressedCallback(object sender, EventArgs e)
         {
             SharedSettings settings = SharedSettings.GetInstance();
-            if(settings.Connection != null)
+            if (settings.Connection != null)
             {
                 //invio il messaggio di rematch
                 Message rematchMsg = new Message();
@@ -135,22 +142,32 @@ namespace AirHockey
                 settings.sendAndReceive.SendMessage(rematchMsg);
                 //aspetto per la risposta
                 RematchResponseReceived = false;
+                /*ShowMessage = true;
                 VideoMode msgMode = new VideoMode(500, 150);
-                UIMessageBox messageWait = new UIMessageBox(msgMode, "Rematch", "Waiting...", parentWindow, settings.font);
+                messageWait = new UIMessageBox(msgMode, "Rematch", "Waiting...", parentWindow, settings.font);
                 showMessageThread = new Thread(delegate ()
                 {
                     messageWait.Show();
                 });
-                while(showMessageThread != null && !RematchResponseReceived)
+                showMessageThread.Start();
+                while(showMessageThread != null && !RematchResponseReceived && ShowMessage)
                 {
-                    if (messageWait.IsOpen)
+                    if (!messageWait.IsOpen)
                     {
                         messageWait.Show();
                     }
                     Thread.Sleep(10);
                 }
-                messageWait.IsOpen = false;
 
+                messageWait.IsOpen = false;
+                messageWait = null;
+                
+                if (ShowMessage)
+                { */
+                while (!RematchResponseReceived)
+                {
+                    Thread.Sleep(10);
+                }
                 if (RematchResponseReceived)
                 {
                     //se la risposta è positiva vado alla pagina del gioco
@@ -165,6 +182,8 @@ namespace AirHockey
                     settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
                 }
             }
+            //}
+            //ShowMessage = false;
         }
 
         /* Metodo per disegnare la pagina */
