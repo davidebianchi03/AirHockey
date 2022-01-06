@@ -74,6 +74,28 @@ namespace AirHockey
             else if(settings.Connection != null && e.message.Command == "r" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
             {
                 //comando rematch
+                VideoMode msgMode = new VideoMode(500, 150);
+                UIAcceptDiscardBox testUI = new UIAcceptDiscardBox(msgMode, "", "Vuoi accettare", parentWindow, settings.font);
+                testUI.Show();
+                Message responseMsg = new Message();
+                responseMsg.Body = "";
+                responseMsg.destinationIP = settings.Connection.OpponentIP;
+                if(testUI.getResponseCode() == UIAcceptDiscardBox.Ok)
+                {
+                    responseMsg.Command = "y";
+                    //se la risposta è positiva vado alla pagina del gioco
+                    settings.Connection.myPoints = 0;
+                    settings.Connection.OpponentsPoints = 0;
+                    settings.windowManager.PageDisplayed = WindowManager.GamePage;
+                }
+                else
+                {
+                    responseMsg.Command = "e";
+                    //se la risposta è negativa vado alla pagina dove si stabilisce la connessione
+                    settings.Connection = null;
+                    settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
+                }
+                settings.sendAndReceive.SendMessage(responseMsg);
             }
             else if (settings.Connection != null && e.message.Command == "y" && e.message.sourceIP.Equals(settings.Connection.OpponentIP))
             {
@@ -135,6 +157,12 @@ namespace AirHockey
                     settings.Connection.myPoints = 0;
                     settings.Connection.OpponentsPoints = 0;
                     settings.windowManager.PageDisplayed = WindowManager.GamePage;
+                }
+                else
+                {
+                    //se la risposta è negativa vado alla pagina dove si stabilisce la connessione
+                    settings.Connection = null;
+                    settings.windowManager.PageDisplayed = WindowManager.EstabishConnectionPage;
                 }
             }
         }
