@@ -183,26 +183,26 @@ namespace AirHockey
             {
                 //se la palla è a sinistra della manopola
                 lastBallX = BallX - distanceX;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X - 10, Ball.Position.Y);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X - 5, Ball.Position.Y);
             }
             else
             {
                 //se la palla è a destra della manopola
                 lastBallX = BallX + distanceX;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X + 10, Ball.Position.Y);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X + 5, Ball.Position.Y);
             }
 
             if (BallY < HandleY)
             {
                 //se la palla è sopra alla manopola
                 lastBallY = BallY - distanceY;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y - 10);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y - 5);
             }
             else
             {
                 //se la palla è sotto alla manopola
                 lastBallY = BallY + distanceY;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y + 10);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y + 5);
             }
 
             //trovo il punto di contatto della pallina con la manopola (punto di intersezione della linea che percorre la pallina e il cerchio della manopola)

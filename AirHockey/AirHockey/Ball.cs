@@ -96,6 +96,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 360);
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    //Position = new SFML.System.Vector2f(Position.X, Position.Y - 10);
                 }
                 //          collisione bordo sinistro
                 if (GlobalPosition.X - Radius < playgroundCenterX - (GoalWidth / 2))
@@ -110,6 +111,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 270) + 270;
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X + 10, Position.Y);
                 }
                 //          collisione bordo destro
                 if (GlobalPosition.X + Radius > playgroundCenterX + (GoalWidth / 2))
@@ -124,6 +126,7 @@ namespace AirHockey
                         angleInDegrees = 180 + Math.Abs(angleInDegrees - 360);
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X - 10, Position.Y);
                 }
                 //Console.WriteLine(angleInDegrees);
                 #endregion
@@ -149,6 +152,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 180) + 180;
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    //Position = new SFML.System.Vector2f(Position.X, Position.Y - 10);
                 }
                 //          collisione bordo sinistro
                 if (GlobalPosition.X - Radius < playgroundCenterX - (GoalWidth / 2))
@@ -163,6 +167,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 270) + 270;
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X + 10, Position.Y);
                 }
                 //          collisione bordo destro
                 if (GlobalPosition.X + Radius > playgroundCenterX + (GoalWidth / 2))
@@ -177,6 +182,7 @@ namespace AirHockey
                         angleInDegrees = 180 + Math.Abs(angleInDegrees - 360);
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X - 10, Position.Y);
                 }
                 #endregion
             }
@@ -198,6 +204,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 360);
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X, Position.Y + 10);
                 }
                 //          collisione bordo inferiore
                 if (GlobalPosition.Y + Radius > playgroundPosition.Y + playgroundSize.Y && GlobalPosition.X > playgroundPosition.X && GlobalPosition.X < playgroundPosition.X + playgroundSize.X)
@@ -212,6 +219,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 180) + 180;
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X, Position.Y - 10);
                 }
                 //          collisione bordo sinistro
                 if (GlobalPosition.X - Radius < playgroundPosition.X && GlobalPosition.Y > playgroundPosition.Y && GlobalPosition.Y < playgroundPosition.Y + playgroundSize.Y)
@@ -226,6 +234,7 @@ namespace AirHockey
                         angleInDegrees = Math.Abs(angleInDegrees - 270) + 270;
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X + 10, Position.Y);
                 }
                 //          collisione bordo destro
                 if (GlobalPosition.X + Radius > playgroundPosition.X + playgroundSize.X && GlobalPosition.Y > playgroundPosition.Y && GlobalPosition.Y < playgroundPosition.Y + playgroundSize.Y)
@@ -240,6 +249,7 @@ namespace AirHockey
                         angleInDegrees = 180 + Math.Abs(angleInDegrees - 360);
                     }
                     Angle = DegreesToRadians(angleInDegrees);
+                    Position = new SFML.System.Vector2f(Position.X - 10, Position.Y);
                 }
                 //Console.WriteLine(angleInDegrees);
                 #endregion

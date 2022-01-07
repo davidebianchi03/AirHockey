@@ -269,7 +269,7 @@ namespace AirHockey
         public void CheckPointsAndChangePage()
         {
             SharedSettings settings = SharedSettings.GetInstance();
-            int maxPoints = 2;
+            int maxPoints = 10;
             if(settings.Connection.myPoints >= maxPoints || settings.Connection.OpponentsPoints >= maxPoints)
             {
                 settings.windowManager.PageDisplayed = WindowManager.GameFinishPage;

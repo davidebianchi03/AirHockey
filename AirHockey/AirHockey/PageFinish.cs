@@ -82,7 +82,7 @@ namespace AirHockey
             {
                 //comando rematch
                 VideoMode msgMode = new VideoMode(500, 150);
-                UIAcceptDiscardBox testUI = new UIAcceptDiscardBox(msgMode, "", "Vuoi accettare", parentWindow, settings.font);
+                UIAcceptDiscardBox testUI = new UIAcceptDiscardBox(msgMode, "", "L'altro host vuole rigiocare\nVuoi accettare?", parentWindow, settings.font);
                 testUI.Show();
                 Message responseMsg = new Message();
                 responseMsg.Body = "";
