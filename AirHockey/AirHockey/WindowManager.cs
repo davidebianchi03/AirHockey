@@ -138,6 +138,13 @@ namespace AirHockey
                         pageGame.Draw();
                         break;
                     case GameFinishPage:
+
+                        if(pageGame != null)
+                        {
+                            settings.MyHandle.StopMovingListenerThread();
+                            settings.MyHandle = null;
+                        }
+
                         if(pageFinish == null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina successiva al gioco

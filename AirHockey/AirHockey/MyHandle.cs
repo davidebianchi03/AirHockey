@@ -31,6 +31,21 @@ namespace AirHockey
             this.Ball = Ball;
             this.Position = new SFML.System.Vector2f((PlaygroundSize.X / 2), (PlaygroundSize.Y / 2) + Radius + 50);
             movingListenerThread = new Thread(MovingListenerThreadMethod);
+            //invio la posizione iniziale della racchetta se è nella propria metà campo il cursore
+            SharedSettings settings = SharedSettings.GetInstance();
+            if (Mouse.GetPosition(parentWindow).X > Ball.playgroundPosition.X
+                && Mouse.GetPosition(parentWindow).X < Ball.playgroundPosition.X + Ball.playgroundSize.X
+                && Mouse.GetPosition(parentWindow).Y > Ball.playgroundPosition.X + (Ball.playgroundSize.X / 2) 
+                && Mouse.GetPosition(parentWindow).Y < Ball.playgroundPosition.Y + Ball.playgroundSize.Y)
+            {
+                SendAndReceive sendAndReceive = settings.sendAndReceive;
+                Message newHandlePosMessage = new Message();
+                newHandlePosMessage.Command = "m";
+                string body = Position.X.ToString() + ";" + Position.Y.ToString();
+                newHandlePosMessage.Body = body;
+                newHandlePosMessage.destinationIP = settings.Connection.OpponentIP;
+                sendAndReceive.SendMessage(newHandlePosMessage);
+            }
         }
 
         /*
@@ -64,6 +79,7 @@ namespace AirHockey
         */
         public void StartMovingListenerThread()
         {
+            listen = true;
             movingListenerThread.Start();
         }
 
@@ -72,9 +88,9 @@ namespace AirHockey
         */
         public void StopMovingListenerThread()
         {
-            movingListenerThread.Abort();
+            listen = false;
         }
-
+        private bool listen = true;
         /*
             Metodo che viene eseguito dal thread per aggiornare la posizione del proprio cursore 
         */
@@ -84,7 +100,7 @@ namespace AirHockey
             long lastContactTicks = DateTime.Now.Ticks;
             SharedSettings settings = SharedSettings.GetInstance();
 
-            while (parentWindow.IsOpen && settings.Connection != null)
+            while (parentWindow.IsOpen && settings.Connection != null && listen)
             {
                 try
                 {
