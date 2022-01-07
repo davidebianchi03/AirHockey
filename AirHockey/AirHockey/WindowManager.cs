@@ -141,6 +141,8 @@ namespace AirHockey
 
                         if(pageGame != null)
                         {
+                            pageGame.Ball.StopMovingBall();
+                            pageGame.Ball = null;
                             settings.MyHandle.StopMovingListenerThread();
                             settings.MyHandle = null;
                         }

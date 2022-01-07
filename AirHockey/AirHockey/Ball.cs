@@ -18,6 +18,7 @@ namespace AirHockey
         public SFML.System.Vector2f playgroundPosition { get; set; }//posizione del campo sullo schermo
         public SFML.System.Vector2f playgroundSize { get; set; }//dimensione del campo di gioco
         public int GoalWidth { get; set; } = 10;
+        private bool moveBall = true;
         /*  Costruttore */
         public Ball(RenderWindow parentWindow, SFML.System.Vector2f playgroundSize, int GoalWidth)
         {
@@ -41,14 +42,14 @@ namespace AirHockey
         {
             if (moveBallThread != null)
             {
-                moveBallThread.Abort();
+                moveBall = false;
             }
         }
         /*   Metodo eseguito dal thread che serve per muovere la pallina   */
         private void MoveBallThread()
         {
             int windowRefreshDelay = 33;//tempo ogni quanto viene aggiornata la finestra in millisecondi
-            while (moveBallThread.IsAlive && parentWindow.IsOpen)
+            while (moveBallThread.IsAlive && parentWindow.IsOpen && moveBall)
             {
                 CheckBorderCollision();
                 double distanceToMove = (Speed * windowRefreshDelay) / 1000;//distanza della quale si sposta la pallina nell'intervallo di tempo dell'aggiornamento dello schermo
