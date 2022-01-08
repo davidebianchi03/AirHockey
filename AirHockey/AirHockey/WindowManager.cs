@@ -89,7 +89,14 @@ namespace AirHockey
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
                             settings.sendAndReceive.ClearEvents();
                             establishConnection = new PageEstablishConnection(window);
-                        }                     
+                        }
+                        if (pageGame != null)
+                        {
+                            pageGame.Ball.StopMovingBall();
+                            pageGame.Ball = null;
+                            settings.MyHandle.StopMovingListenerThread();
+                            settings.MyHandle = null;
+                        }
                         setUsernamePage = null;
                         acceptConnection = null;
                         pageGame = null;

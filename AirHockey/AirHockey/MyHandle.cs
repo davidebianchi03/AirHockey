@@ -23,7 +23,7 @@ namespace AirHockey
         public Ball Ball { get; set; }
         public SFML.System.Vector2f GlobalPosition = new SFML.System.Vector2f(0, 0);//posizione della manopola sulla finestra intera
         public SFML.System.Vector2f LastPosition = new SFML.System.Vector2f(0, 0);//ultima posizione registrata del cursore
-        const int TicksPerSecond = 10000000;
+        const long TicksPerSecond = 10000000;
 
         public MyHandle(RenderWindow parentWindow, SFML.System.Vector2f PlaygroundSize, Ball Ball)
         {
@@ -125,12 +125,21 @@ namespace AirHockey
                     //Console.WriteLine(DateTime.Now.Ticks);
                     if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500 /*&& distance > (Radius + Ball.Radius - 30)*/)//in ogni millisecondo ci sono 10000 ticks
                     {
-                        Ball.Angle = calculateNewAngle2();//CalculateBallRebounceAngle();
-                        /*if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
+                        if (movementsList.Count <= 2 || movementsList[movementsList.Count - 1].Ticks - DateTime.Now.Ticks > TicksPerSecond * 2)
                         {
-                            Ball.Speed += settings.SpeedIncrease;
-                        }*/
-                        Ball.Speed = CalculateNewBallSpeed();
+                            Ball.Speed = Ball.Speed * 0.6;
+                            Ball.Angle += Math.PI / 2;
+                        }
+                        else
+                        {
+                            Ball.Angle = calculateNewAngle2();//CalculateBallRebounceAngle();
+                            /*if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
+                            {
+                                Ball.Speed += settings.SpeedIncrease;
+                            }*/
+                            Ball.Speed = CalculateNewBallSpeed();
+                            movementsList = new List<Movement>();
+                        }
                         lastContactTicks = DateTime.Now.Ticks;
                         //invio la nuova posizione e il nuovo angolo della pallina
                         SendAndReceive sendAndReceive = settings.sendAndReceive;
@@ -178,7 +187,7 @@ namespace AirHockey
         private double CalculateNewBallSpeed()
         {
             double speed = 300;
-
+            double minSpeed = 150;
             if (movementsList.Count >= 2)
             {
                 SFML.System.Vector2f firstPoint = movementsList[movementsList.Count - 1].Position;//fisso
@@ -214,11 +223,20 @@ namespace AirHockey
 
                 double distance = Math.Sqrt(Math.Pow(firstPoint.X - lastPoint.X, 2) + Math.Pow(firstPoint.Y - lastPoint.Y, 2));
                 speed = distance / (Math.Abs(lastPointTicks - firstPointTicks)) / TicksPerSecond;
-                speed *= Math.Pow(10, 13) + 100;
-                if(speed > 1000)
-                    speed = 1000;
+                speed *= Math.Pow(10, 13) * 8;
+                /*if(speed > 1500)
+                    speed = 1500;*/
+                speed += Ball.Speed * 0.6;
+                
+                if(speed < minSpeed)
+                    speed = minSpeed;
+            }
+            else
+            {
+                speed = 0;
             }
 
+            
             return speed;
         }
 

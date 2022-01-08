@@ -48,7 +48,7 @@ namespace AirHockey
         /*   Metodo eseguito dal thread che serve per muovere la pallina   */
         private void MoveBallThread()
         {
-            int windowRefreshDelay = 33;//tempo ogni quanto viene aggiornata la finestra in millisecondi
+            int windowRefreshDelay = 2;//tempo ogni quanto viene aggiornata la finestra in millisecondi
             while (moveBallThread.IsAlive && parentWindow.IsOpen && moveBall)
             {
                 CheckBorderCollision();
