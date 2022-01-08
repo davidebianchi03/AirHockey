@@ -40,7 +40,7 @@ namespace AirHockey
                     MessageReceivedArgs args = new MessageReceivedArgs();
                     args.message = msg;
                     MessageReceived?.Invoke(this, args);
-                    Console.WriteLine("Received: " + stringReceived);
+                    //Console.WriteLine("Received: " + stringReceived);
                 }
                 catch (Exception ex)
                 {
@@ -60,7 +60,7 @@ namespace AirHockey
         {
             SharedSettings settings = SharedSettings.GetInstance();
             byte[] dataToSend = Encoding.ASCII.GetBytes(message.ToCSV());
-            Console.WriteLine("Send: " + message.ToCSV());
+            //Console.WriteLine("Send: " + message.ToCSV());
             udpClient.Send(dataToSend, dataToSend.Length, message.destinationIP.ToString(), settings.PortNumber);
         }
 

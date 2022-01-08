@@ -21,8 +21,9 @@ namespace AirHockey
         public SFML.System.Vector2f PlaygroundPosition { get; set; } = new SFML.System.Vector2f(0, 0);//posizione del campo da gioco
         private Thread movingListenerThread;//thread che ascolta e aggiorna lo spostamento della del cursore
         public Ball Ball { get; set; }
-        public SFML.System.Vector2f GlobalPosition = new SFML.System.Vector2f(0,0);//posizione della manopola sulla finestra intera
+        public SFML.System.Vector2f GlobalPosition = new SFML.System.Vector2f(0, 0);//posizione della manopola sulla finestra intera
         public SFML.System.Vector2f LastPosition = new SFML.System.Vector2f(0, 0);//ultima posizione registrata del cursore
+        const int TicksPerSecond = 10000000;
 
         public MyHandle(RenderWindow parentWindow, SFML.System.Vector2f PlaygroundSize, Ball Ball)
         {
@@ -35,7 +36,7 @@ namespace AirHockey
             SharedSettings settings = SharedSettings.GetInstance();
             if (Mouse.GetPosition(parentWindow).X > Ball.playgroundPosition.X
                 && Mouse.GetPosition(parentWindow).X < Ball.playgroundPosition.X + Ball.playgroundSize.X
-                && Mouse.GetPosition(parentWindow).Y > Ball.playgroundPosition.X + (Ball.playgroundSize.X / 2) 
+                && Mouse.GetPosition(parentWindow).Y > Ball.playgroundPosition.X + (Ball.playgroundSize.X / 2)
                 && Mouse.GetPosition(parentWindow).Y < Ball.playgroundPosition.Y + Ball.playgroundSize.Y)
             {
                 SendAndReceive sendAndReceive = settings.sendAndReceive;
@@ -96,9 +97,11 @@ namespace AirHockey
         */
         public void MovingListenerThreadMethod()
         {
-            int updateTime = 2;//tempo ogni quanto viene aggiornata la posizione del cursore sullo schermo
+            int updateTime = 1;//tempo ogni quanto viene aggiornata la posizione del cursore sullo schermo
             long lastContactTicks = DateTime.Now.Ticks;
             SharedSettings settings = SharedSettings.GetInstance();
+            movementsList = new List<Movement>();
+            const int maxMovementsListLength = 100;//numero massimo di movimenti contenuti della lista
 
             while (parentWindow.IsOpen && settings.Connection != null && listen)
             {
@@ -120,13 +123,14 @@ namespace AirHockey
                     /* Calcolo la pallina se è andata a scontrarsi con la manopola */
                     double distance = Math.Sqrt(Math.Pow((Position.X - Ball.Position.X), 2) + Math.Pow((Position.Y - Ball.Position.Y), 2));
                     //Console.WriteLine(DateTime.Now.Ticks);
-                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500)//in ogni millisecondo ci sono 10000 ticks
+                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 250 && distance > (Radius + Ball.Radius - 30))//in ogni millisecondo ci sono 10000 ticks
                     {
                         Ball.Angle = CalculateBallRebounceAngle();
-                        if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
+                        /*if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
                         {
                             Ball.Speed += settings.SpeedIncrease;
-                        }
+                        }*/
+                        Ball.Speed = CalculateNewBallSpeed();
                         lastContactTicks = DateTime.Now.Ticks;
                         //invio la nuova posizione e il nuovo angolo della pallina
                         SendAndReceive sendAndReceive = settings.sendAndReceive;
@@ -136,6 +140,8 @@ namespace AirHockey
                         updatePositionMsg.Body = CommandParameters;
                         updatePositionMsg.destinationIP = settings.Connection.OpponentIP;
                         sendAndReceive.SendMessage(updatePositionMsg);
+
+                        //Console.WriteLine(CalculateNewBallSpeed());
                     }
 
                     /*   Controllo se è cambiata la posizione del cursore e in caso invio la nuova posizione   */
@@ -150,11 +156,70 @@ namespace AirHockey
                         newHandlePosMessage.Body = body;
                         newHandlePosMessage.destinationIP = settings.Connection.OpponentIP;
                         sendAndReceive.SendMessage(newHandlePosMessage);
+                        //aggiunta della nuova posizione alla lista
+                        if (movementsList.Count > maxMovementsListLength)
+                        {
+                            movementsList.RemoveAt(0);
+                        }
+                        Movement m = new Movement();
+                        m.Position = Position;
+                        m.Ticks = DateTime.Now.Ticks;
+                        movementsList.Add(m);
                     }
 
                     Thread.Sleep(updateTime);
-                }catch (Exception ex) { }
+                }
+                catch (Exception ex) { }
             }
+        }
+
+        private List<Movement> movementsList = null;
+
+        private double CalculateNewBallSpeed()
+        {
+            double speed = 300;
+
+            if (movementsList.Count >= 2)
+            {
+                SFML.System.Vector2f firstPoint = movementsList[movementsList.Count - 1].Position;//fisso
+                long firstPointTicks = movementsList[movementsList.Count - 1].Ticks;
+                SFML.System.Vector2f lastPoint = movementsList[movementsList.Count - 2].Position;//cambia
+                long lastPointTicks = movementsList[movementsList.Count - 2].Ticks;
+                //valori di m e q della linea presa come riferimento (y = mx + q)
+                double m = (lastPoint.Y - firstPoint.Y) / (lastPoint.X - firstPoint.X);
+                double q = ((firstPoint.X * lastPoint.Y) - (lastPoint.X * firstPoint.X)) / (firstPoint.X - lastPoint.X);
+                //trovo qual'è l'ultimo punto appartenente alla linea
+                for (int i = movementsList.Count - 3; i > 0; i--)
+                {
+                    double m2 = 0;
+                    if (movementsList[i].Position.X != firstPoint.X)
+                    {
+                        m2 = (movementsList[i].Position.Y - firstPoint.Y) / (movementsList[i].Position.X - firstPoint.X);
+                    }
+                    double q2 = ((firstPoint.X * movementsList[i].Position.Y) - (movementsList[i].Position.X * firstPoint.X)) / (firstPoint.X - movementsList[i].Position.X);
+
+                    //se il valore delle nuove m e q non sono molto diversi
+                    if (Math.Abs(m - m2) < 2 && Math.Abs(q - q2) < 2)
+                    {
+                        //il nuovo punto è accettabile
+                        lastPoint = movementsList[i].Position;
+                        lastPointTicks = movementsList[i].Ticks;
+                    }
+                    else
+                    {
+                        //altrimenti i punti da qui in poi non sono più accettabili
+                        break;
+                    }
+                }
+
+                double distance = Math.Sqrt(Math.Pow(firstPoint.X - lastPoint.X, 2) + Math.Pow(firstPoint.Y - lastPoint.Y, 2));
+                speed = distance / (Math.Abs(lastPointTicks - firstPointTicks)) / TicksPerSecond;
+                speed *= Math.Pow(10, 13) + 100;
+                if(speed > 1000)
+                    speed = 1000;
+            }
+
+            return speed;
         }
 
         public double CalculateBallRebounceAngle()
@@ -179,30 +244,32 @@ namespace AirHockey
             double lastBallX = 0;
             double lastBallY = 0;
 
+            float d = (float)(33 * CalculateNewBallSpeed() * 0.005);
+
             if (BallX < HandleX)
             {
                 //se la palla è a sinistra della manopola
                 lastBallX = BallX - distanceX;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X - 5, Ball.Position.Y);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X - d, Ball.Position.Y);
             }
             else
             {
                 //se la palla è a destra della manopola
                 lastBallX = BallX + distanceX;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X + 5, Ball.Position.Y);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X + d, Ball.Position.Y);
             }
 
             if (BallY < HandleY)
             {
                 //se la palla è sopra alla manopola
                 lastBallY = BallY - distanceY;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y - 5);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y - d);
             }
             else
             {
                 //se la palla è sotto alla manopola
                 lastBallY = BallY + distanceY;
-                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y + 5);
+                Ball.Position = new SFML.System.Vector2f(Ball.Position.X, Ball.Position.Y + d);
             }
 
             //trovo il punto di contatto della pallina con la manopola (punto di intersezione della linea che percorre la pallina e il cerchio della manopola)
@@ -260,7 +327,11 @@ namespace AirHockey
         }
 
 
+    }
 
-
+    public struct Movement
+    {
+        public SFML.System.Vector2f Position;
+        public long Ticks;
     }
 }
