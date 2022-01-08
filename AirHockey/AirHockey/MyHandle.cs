@@ -123,9 +123,9 @@ namespace AirHockey
                     /* Calcolo la pallina se è andata a scontrarsi con la manopola */
                     double distance = Math.Sqrt(Math.Pow((Position.X - Ball.Position.X), 2) + Math.Pow((Position.Y - Ball.Position.Y), 2));
                     //Console.WriteLine(DateTime.Now.Ticks);
-                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 250 && distance > (Radius + Ball.Radius - 30))//in ogni millisecondo ci sono 10000 ticks
+                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500 /*&& distance > (Radius + Ball.Radius - 30)*/)//in ogni millisecondo ci sono 10000 ticks
                     {
-                        Ball.Angle = CalculateBallRebounceAngle();
+                        Ball.Angle = calculateNewAngle2();//CalculateBallRebounceAngle();
                         /*if (Ball.Speed < settings.SpeedIncrease * 20 + 300)
                         {
                             Ball.Speed += settings.SpeedIncrease;
@@ -221,6 +221,16 @@ namespace AirHockey
 
             return speed;
         }
+
+        private double calculateNewAngle2()
+        {
+            double dx = movementsList[movementsList.Count - 1].Position.X - movementsList[movementsList.Count - 2].Position.X;
+            double dy = movementsList[movementsList.Count - 1].Position.Y - movementsList[movementsList.Count - 2].Position.Y;
+
+            double newAngle = Math.Atan2(dy ,dx);
+            return newAngle;
+        }
+    
 
         public double CalculateBallRebounceAngle()
         {
