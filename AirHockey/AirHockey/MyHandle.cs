@@ -111,19 +111,37 @@ namespace AirHockey
                     float globalY = Mouse.GetPosition(parentWindow).Y;
                     GlobalPosition = new SFML.System.Vector2f(globalX, globalY);
                     //Controllo se il cursore si trova all'interno del campo da gioco nella mia metà campo
-                    if (globalX - Radius > PlaygroundPosition.X
+                    /*if (globalX - Radius > PlaygroundPosition.X
                         && globalX + Radius < PlaygroundPosition.X + PlaygroundSize.X &&
                         globalY - Radius > PlaygroundPosition.Y + (PlaygroundSize.Y / 2) &&
                         globalY + Radius < PlaygroundSize.Y + PlaygroundPosition.Y)
                     {
                         //calcolo la posizione locale (nel campo del cursore)
                         Position = new SFML.System.Vector2f(globalX - PlaygroundPosition.X, globalY - PlaygroundPosition.Y);//posizione globale della manopola sulla finestra
+                    }*/
+                    float newX = Position.X;
+                    float newY = Position.Y;
+                    if (globalX - Radius > PlaygroundPosition.X
+                       && globalX + Radius < PlaygroundPosition.X + PlaygroundSize.X)
+                    {
+                        newX = globalX - PlaygroundPosition.X;
                     }
 
+                    if (globalY - Radius > PlaygroundPosition.Y + (PlaygroundSize.Y / 2) &&
+                        globalY + Radius < PlaygroundSize.Y + PlaygroundPosition.Y)
+                    {
+                        newY = globalY - PlaygroundPosition.Y;
+                    }
+                    Position = new SFML.System.Vector2f(newX, newY);
                     /* Calcolo la pallina se è andata a scontrarsi con la manopola */
                     double distance = Math.Sqrt(Math.Pow((Position.X - Ball.Position.X), 2) + Math.Pow((Position.Y - Ball.Position.Y), 2));
                     //Console.WriteLine(DateTime.Now.Ticks);
-                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 500 /*&& distance > (Radius + Ball.Radius - 30)*/)//in ogni millisecondo ci sono 10000 ticks
+                    if(distance < Radius + Ball.Radius)
+                    {
+                        Position = LastPosition;
+                    }
+
+                    if (distance < Radius + Ball.Radius && (DateTime.Now.Ticks - lastContactTicks) >= 10000 * 250 /*&& distance > (Radius + Ball.Radius - 30)*/)//in ogni millisecondo ci sono 10000 ticks
                     {
                         if (movementsList.Count <= 2 || movementsList[movementsList.Count - 1].Ticks - DateTime.Now.Ticks > TicksPerSecond * 2)
                         {

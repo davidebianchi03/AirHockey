@@ -61,6 +61,7 @@ namespace AirHockey
 
             if (settings.Connection.IEstablish)
             {
+                Console.WriteLine("I established");
                 //genero l'angolo random della pallina
                 Random Rand = new Random();
                 Ball.Angle = Rand.NextDouble() * (Math.PI * 2);

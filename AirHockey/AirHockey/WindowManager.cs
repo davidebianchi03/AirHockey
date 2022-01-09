@@ -107,7 +107,7 @@ namespace AirHockey
                         if (establishConnection != null)
                         {
                             //inizializzo l'oggetto che serve a disegnare e gestire la pagina per inviare la richiesta di connessione
-                            establishConnection.btnSendRequest.Position = new SFML.System.Vector2f(0,0);//sposto il pulsante di invio richiesta perchè sa solo lui perchè si bugga
+                            establishConnection.btnSendRequest.Enable = false;//disabilito il pulsante di invio richiesta perchè sa solo lui perchè si bugga anche se non esiste più
                         }                        
                         if (acceptConnection == null)
                         {
