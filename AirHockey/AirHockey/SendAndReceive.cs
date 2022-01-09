@@ -36,6 +36,7 @@ namespace AirHockey
                     byte[] dataReceived = udpClient.Receive(ref receiveIP);
                     string stringReceived = Encoding.ASCII.GetString(dataReceived);
                     //Console.WriteLine(stringReceived);  
+                    stringReceived = stringReceived.Replace(".", ",");
                     Message msg = Message.CreateFromCsv(receiveIP.Address, null, stringReceived);
                     MessageReceivedArgs args = new MessageReceivedArgs();
                     args.message = msg;
@@ -59,6 +60,7 @@ namespace AirHockey
         public void SendMessage(Message message)
         {
             SharedSettings settings = SharedSettings.GetInstance();
+            message.Body = message.Body.Replace(",",".");
             byte[] dataToSend = Encoding.ASCII.GetBytes(message.ToCSV());
             //Console.WriteLine("Send: " + message.ToCSV());
             udpClient.Send(dataToSend, dataToSend.Length, message.destinationIP.ToString(), settings.PortNumber);
